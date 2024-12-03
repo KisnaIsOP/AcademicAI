@@ -1,5 +1,38 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const themeToggle = document.getElementById('themeToggle');
+    const themeToggle = document.createElement('div');
+    themeToggle.classList.add('theme-toggle');
+    themeToggle.innerHTML = `
+        <button id="theme-switch">
+            <i class="fas fa-moon"></i>
+        </button>
+    `;
+    document.body.appendChild(themeToggle);
+
+    const themeButton = document.getElementById('theme-switch');
+    const moonIcon = '<i class="fas fa-moon"></i>';
+    const sunIcon = '<i class="fas fa-sun"></i>';
+
+    // Theme Toggle Logic
+    themeButton.addEventListener('click', () => {
+        document.body.classList.toggle('dark-mode');
+        
+        themeButton.innerHTML = document.body.classList.contains('dark-mode') 
+            ? sunIcon 
+            : moonIcon;
+
+        // Optional: Save theme preference
+        localStorage.setItem('theme', 
+            document.body.classList.contains('dark-mode') ? 'dark' : 'light'
+        );
+    });
+
+    // Restore theme preference
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+        themeButton.innerHTML = sunIcon;
+    }
+
     const body = document.body;
     const lightIcon = themeToggle.querySelector('.light-icon');
     const darkIcon = themeToggle.querySelector('.dark-icon');
@@ -70,6 +103,44 @@ document.addEventListener('DOMContentLoaded', () => {
         
         messagesContainer.appendChild(messageDiv);
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    // Dynamic Message Animation
+    function animateMessages() {
+        const messages = document.querySelectorAll('.message');
+        messages.forEach((message, index) => {
+            message.style.animationDelay = `${index * 0.2}s`;
+        });
+    }
+    animateMessages();
+
+    // Logo Hover Effect
+    const logo = document.querySelector('.main-logo');
+    if (logo) {
+        logo.addEventListener('mousemove', (e) => {
+            const rect = logo.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            logo.style.transform = `
+                perspective(500px) 
+                rotateX(${(y - rect.height/2) / 20}deg) 
+                rotateY(${-(x - rect.width/2) / 20}deg)
+            `;
+        });
+
+        logo.addEventListener('mouseleave', () => {
+            logo.style.transform = 'perspective(500px) rotateX(0deg) rotateY(0deg)';
+        });
+    }
+
+    // Dynamic Chat Input Expansion
+    const chatInput = document.querySelector('.input-container textarea');
+    if (chatInput) {
+        chatInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = `${this.scrollHeight}px`;
+        });
     }
 
     // Engagement Features
@@ -145,5 +216,26 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             alert('Please select a rating');
         }
+    });
+
+    // Engagement Features Hover Effects
+    const featureCards = document.querySelectorAll('.feature-card');
+    featureCards.forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            card.style.transform = `
+                perspective(500px) 
+                rotateX(${(y - rect.height/2) / 20}deg) 
+                rotateY(${-(x - rect.width/2) / 20}deg) 
+                scale(1.05)
+            `;
+        });
+
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = 'perspective(500px) rotateX(0deg) rotateY(0deg) scale(1)';
+        });
     });
 });
