@@ -139,8 +139,38 @@ def generate_emoji():
     ]
     return random.choice(emojis)
 
+def format_solution(text):
+    """Format mathematical solutions with clear steps and equations"""
+    # Split into steps
+    steps = text.split('\n\n')
+    formatted_steps = []
+    
+    for i, step in enumerate(steps):
+        if i == 0 and step.lower().startswith('solution:'):
+            formatted_steps.append(f"**{step.strip()}**\n")
+        elif step.strip():
+            # Format step numbers
+            if step.lower().startswith(('step ', 'therefore', 'hence', 'thus', 'final')):
+                formatted_steps.append(f"\n**{step.strip()}**\n")
+            else:
+                # Format equations and explanations
+                lines = step.split('\n')
+                formatted_lines = []
+                for line in lines:
+                    # Check if line contains equations
+                    if any(char in line for char in '=+-×÷*/'):
+                        formatted_lines.append(f"```math\n{line.strip()}\n```")
+                    else:
+                        formatted_lines.append(line.strip())
+                formatted_steps.append('\n'.join(formatted_lines))
+    
+    return '\n\n'.join(formatted_steps)
+
 def sanitize_response(text):
     """Clean and format the AI response"""
+    if any(keyword in text.lower() for keyword in ['solution:', 'solve:', 'find:', 'calculate:']):
+        text = format_solution(text)
+    
     # Replace multiple newlines with double newlines for clear separation
     text = re.sub(r'\n\s*\n', '\n\n', text)
     
