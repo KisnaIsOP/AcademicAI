@@ -141,15 +141,41 @@ def generate_emoji():
 
 def sanitize_response(text):
     """Clean and format the AI response"""
-    # Preserve Markdown-like formatting
-    formatting_preserving_sanitization = (
+    # Replace multiple newlines with double newlines for clear separation
+    text = re.sub(r'\n\s*\n', '\n\n', text)
+    
+    # Format step indicators and numbered points
+    text = re.sub(r'^(\d+\.|Step \d+:|First:|Second:|Third:|Next:|Finally:)', r'\n**\1**', text, flags=re.MULTILINE)
+    text = re.sub(r'^(Solution:|Method:|Process:|Example:|Result:|Summary:)', r'\n**\1**', text, flags=re.MULTILINE)
+    
+    # Format explanatory sections
+    text = re.sub(r'^(Explanation:|Note:|Important:|Key Point:|Remember:)', r'\n**\1**', text, flags=re.MULTILINE)
+    
+    # Format conclusions and key statements
+    text = re.sub(r'(Therefore|Hence|Thus|So|In conclusion|To summarize)(,|\:)', r'\n**\1\2**', text)
+    
+    # Format code or technical content
+    text = re.sub(r'`(.*?)`', r'\n`\1`\n', text)
+    
+    # Format list items for better spacing
+    text = re.sub(r'^\s*[-•]\s*(.+)$', r'\n• \1', text, flags=re.MULTILINE)
+    
+    # Add spacing after colons in steps
+    text = re.sub(r'(:\s*)(.+)$', r':\n\1\2', text, flags=re.MULTILINE)
+    
+    # Preserve Markdown-like formatting while sanitizing HTML
+    formatted_text = (
         text.replace('&', '&amp;')
             .replace('<', '&lt;')
             .replace('>', '&gt;')
             .replace('"', '&quot;')
             .replace("'", '&#039;')
     )
-    return formatting_preserving_sanitization
+    
+    # Clean up excessive newlines
+    formatted_text = re.sub(r'\n{3,}', '\n\n', formatted_text)
+    
+    return formatted_text
 
 @app.route('/')
 def home():

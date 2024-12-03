@@ -215,6 +215,68 @@ body.dark-mode .main-logo {
     font-weight: 400;
 }
 
+/* Step-by-Step Content Styles */
+.messages .ai-message {
+    white-space: pre-wrap;
+    line-height: 1.6;
+}
+
+.messages .ai-message strong {
+    display: block;
+    color: var(--primary-text-highlight);
+    margin-top: 16px;
+    margin-bottom: 8px;
+    font-weight: 600;
+    font-size: 1.05em;
+}
+
+.messages .ai-message code {
+    display: inline-block;
+    font-family: 'Courier New', monospace;
+    background-color: var(--code-background);
+    padding: 4px 8px;
+    margin: 4px 0;
+    border-radius: 4px;
+    color: var(--code-text-color);
+    border-left: 2px solid var(--primary-color);
+}
+
+/* List and bullet points */
+.messages .ai-message ul {
+    margin: 8px 0;
+    padding-left: 20px;
+}
+
+.messages .ai-message li,
+.messages .ai-message p {
+    margin: 8px 0;
+    padding-left: 16px;
+}
+
+/* Highlight important sections */
+.messages .ai-message p:has(strong) {
+    border-left: 2px solid var(--accent-color);
+    padding-left: 12px;
+    margin: 12px 0;
+}
+
+/* Add spacing after sections */
+.messages .ai-message p + p {
+    margin-top: 12px;
+}
+
+/* Bullet points */
+.messages .ai-message p:has(• ) {
+    padding-left: 24px;
+    position: relative;
+}
+
+/* Emphasis styles */
+.messages .ai-message em {
+    color: var(--secondary-text-highlight);
+    font-style: italic;
+}
+
 /* Text Formatting Styles */
 .messages .ai-message strong {
     font-weight: bold;
@@ -242,6 +304,43 @@ body.dark-mode .main-logo {
 .messages .ai-message u {
     text-decoration: underline;
     color: var(--underline-text-color);
+}
+
+/* Mathematical Solution Styles */
+.messages .ai-message {
+    white-space: pre-wrap;
+    line-height: 1.6;
+}
+
+.messages .ai-message code {
+    display: block;
+    font-family: 'Courier New', monospace;
+    background-color: var(--code-background);
+    padding: 8px 12px;
+    margin: 8px 0;
+    border-radius: 6px;
+    color: var(--code-text-color);
+    border-left: 3px solid var(--primary-color);
+}
+
+.messages .ai-message strong {
+    display: block;
+    color: var(--primary-text-highlight);
+    margin-top: 12px;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+/* Mathematical expressions */
+.messages .ai-message .math-step {
+    margin: 8px 0;
+    padding-left: 16px;
+    border-left: 2px solid var(--accent-color);
+}
+
+/* Solution steps spacing */
+.messages .ai-message p {
+    margin: 8px 0;
 }
 
 /* Input Container */
