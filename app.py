@@ -5,12 +5,34 @@ import os
 import random
 import re
 from datetime import datetime
+import threading
+import time
+import requests
 
 # Load environment variables
 load_dotenv()
 
 # Configure Gemini AI
 genai.configure(api_key=os.getenv('GEMINI_API_KEY'))
+
+app = Flask(__name__)
+
+# Self-Pinging Function
+def keep_alive():
+    while True:
+        try:
+            # Use the actual render.com URL of your app
+            response = requests.get('https://hecker-ai.onrender.com', timeout=10)
+            print(f"Self-ping status: {response.status_code}")
+        except Exception as e:
+            print(f"Self-ping error: {e}")
+        
+        # Sleep for 20 minutes (1200 seconds)
+        time.sleep(1200)
+
+# Start the keep-alive thread
+keep_alive_thread = threading.Thread(target=keep_alive, daemon=True)
+keep_alive_thread.start()
 
 # AI Configuration
 AI_DESCRIPTION = """
@@ -58,8 +80,6 @@ chat = model.start_chat(history=[
         'parts': ['I understand. I will act as Hecker, an advanced AI learning companion with the described characteristics.']
     }
 ])
-
-app = Flask(__name__)
 
 # Context Management
 class ConversationContext:
