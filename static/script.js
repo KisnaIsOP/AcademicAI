@@ -71,6 +71,36 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Improved Symbol and Emoji Support
     function sanitizeAndRenderMessage(message) {
+        // Process math equations first
+        message = message.replace(/\$\$(.*?)\$\$/g, (match, equation) => {
+            return `<div class="math-block">${match}</div>`;
+        });
+        message = message.replace(/\$(.*?)\$/g, (match, equation) => {
+            return `<span class="math-inline">${match}</span>`;
+        });
+
+        // Process steps and formatting
+        const lines = message.split('\n');
+        let formattedLines = lines.map(line => {
+            // Format step numbers
+            line = line.replace(/^(\d+\.|Step \d+:)(.*)/, '<strong>$1</strong>$2');
+            
+            // Format equations and math symbols
+            line = line.replace(/\\[a-zA-Z]+/g, match => `<span class="math-symbol">${match}</span>`);
+            
+            return line;
+        });
+
+        // Join lines with proper spacing
+        message = formattedLines.join('\n');
+
+        // Trigger MathJax rendering after content is added
+        setTimeout(() => {
+            if (window.MathJax) {
+                window.MathJax.typeset();
+            }
+        }, 100);
+
         // Escape HTML to prevent XSS
         const sanitizedMessage = message
             .replace(/&/g, '&amp;')
