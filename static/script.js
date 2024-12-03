@@ -1,241 +1,421 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const themeToggle = document.createElement('div');
-    themeToggle.classList.add('theme-toggle');
-    themeToggle.innerHTML = `
-        <button id="theme-switch">
-            <i class="fas fa-moon"></i>
-        </button>
-    `;
-    document.body.appendChild(themeToggle);
+document.addEventListener('DOMContentLoaded', function() {
+    const messagesContainer = document.getElementById('messages');
+    const userInput = document.getElementById('user-input');
+    const sendButton = document.getElementById('send-button');
+    const feedbackContainer = document.querySelector('.feedback-container');
+    const feedbackStars = document.querySelectorAll('.feedback-stars i');
+    const submitFeedback = document.getElementById('submit-feedback');
+    const themeToggle = document.getElementById('themeToggle');
+    
+    let currentRating = 0;
+    let conversationCount = 0;
+    let sessionId = localStorage.getItem('session_id') || Date.now().toString();
+    
+    // Store session ID
+    localStorage.setItem('session_id', sessionId);
 
-    const themeButton = document.getElementById('theme-switch');
-    const moonIcon = '<i class="fas fa-moon"></i>';
-    const sunIcon = '<i class="fas fa-sun"></i>';
-
-    // Theme Toggle Logic
-    themeButton.addEventListener('click', () => {
-        document.body.classList.toggle('dark-mode');
-        
-        themeButton.innerHTML = document.body.classList.contains('dark-mode') 
-            ? sunIcon 
-            : moonIcon;
-
-        // Optional: Save theme preference
-        localStorage.setItem('theme', 
-            document.body.classList.contains('dark-mode') ? 'dark' : 'light'
-        );
-    });
-
-    // Restore theme preference
+    // Initialize engagement features
+    const journalSection = document.querySelector('.journal-section');
+    const gratitudeSection = document.querySelector('.gratitude-section');
+    const mindfulnessTimer = document.querySelector('.mindfulness-timer');
+    
+    // Theme Management
+    const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
     const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') {
-        document.body.classList.add('dark-mode');
-        themeButton.innerHTML = sunIcon;
+    if (savedTheme) {
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    } else if (prefersDarkScheme.matches) {
+        document.documentElement.setAttribute('data-theme', 'dark');
     }
 
-    const body = document.body;
-    const lightIcon = themeToggle.querySelector('.light-icon');
-    const darkIcon = themeToggle.querySelector('.dark-icon');
-
-    // Theme Toggle
+    // Theme toggle handler
     themeToggle.addEventListener('click', () => {
-        body.classList.toggle('dark-mode');
-        updateThemeIcons();
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        
+        // Add animation class
+        themeToggle.classList.add('theme-transition');
+        setTimeout(() => themeToggle.classList.remove('theme-transition'), 300);
     });
 
-    function updateThemeIcons() {
-        if (body.classList.contains('dark-mode')) {
-            lightIcon.classList.remove('active');
-            darkIcon.classList.add('active');
-        } else {
-            lightIcon.classList.add('active');
-            darkIcon.classList.remove('active');
+    // Enhanced Emoji Mapping with more contextual categories
+    const emojiMap = {
+        greeting: ['👋', '🤗', '😊', '✨', '💫'],
+        farewell: ['👋', '💫', '🌟', '✨', '🤗'],
+        positive: ['😊', '🌟', '💫', '✨', '🎉', '💖', '🌈'],
+        concern: ['😔', '💙', '🫂', '💭', '🤍'],
+        empathy: ['💗', '🫂', '💝', '💖', '🤗'],
+        reflection: ['🤔', '💭', '💡', '✨', '🌟'],
+        listening: ['👂', '🎧', '💭', '🤝', '💫'],
+        support: ['💪', '🤗', '🌈', '💫', '💝'],
+        gratitude: ['🙏', '💖', '✨', '💫', '🌟'],
+        encouragement: ['💫', '🌟', '✨', '💪', '🔆'],
+        understanding: ['💭', '🤝', '💡', '💫', '💖'],
+        sympathy: ['💙', '🫂', '🤗', '💖', '💝'],
+        celebration: ['🎉', '🌟', '✨', '🎊', '💫'],
+        mindfulness: ['🧘‍♀️', '🌱', '🍃', '🌸', '💫'],
+        growth: ['🌱', '🚀', '📈', '💫', '⭐'],
+        healing: ['💖', '🌈', '✨', '🌸', '💫'],
+        strength: ['💪', '🦁', '⭐', '🌟', '💫'],
+        peace: ['🕊️', '☮️', '🌸', '✨', '💫'],
+        anxiety: ['😮‍💨', '💭', '🫂', '💙', '🤍'],
+        depression: ['💙', '🫂', '💗', '🤍', '💝'],
+        hope: ['🌅', '🌈', '✨', '💫', '🌟'],
+        sleep: ['😴', '💤', '🌙', '✨', '🌟'],
+        stress: ['😮‍💨', '🫂', '💆‍♀️', '🌸', '💫'],
+        confidence: ['💪', '👑', '⭐', '🌟', '💫']
+    };
+
+    // Improved Symbol and Emoji Support
+    function sanitizeAndRenderMessage(message) {
+        // Escape HTML to prevent XSS
+        const sanitizedMessage = message
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+        
+        // Advanced text formatting
+        const formattedMessage = sanitizedMessage
+            // Bold: **text** or __text__
+            .replace(/(\*\*|__)(.*?)\1/g, '<strong>$2</strong>')
+            // Italic: *text* or _text_
+            .replace(/(\*|_)(.*?)\1/g, '<em>$2</em>')
+            // Strikethrough: ~~text~~
+            .replace(/~~(.*?)~~/g, '<del>$1</del>')
+            // Code: `code`
+            .replace(/`(.*?)`/g, '<code>$1</code>')
+            // Underline: ++text++
+            .replace(/\+\+(.*?)\+\+/g, '<u>$1</u>');
+        
+        // Convert Unicode emojis and special characters
+        const renderedMessage = formattedMessage.replace(
+            /[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, 
+            (match) => `<span class="emoji">${match}</span>`
+        );
+        
+        return renderedMessage;
+    }
+
+    // Enhanced context detection for better emoji placement
+    function addEmojisToResponse(response) {
+        // Check if response is undefined, null, or not a string
+        if (!response || typeof response !== 'string') {
+            return response || ''; // Return empty string if response is invalid
+        }
+
+        const lowerResponse = response.toLowerCase();
+        let enhancedResponse = response;
+        
+        // Greeting detection
+        if (/^(hi|hello|hey|greetings|good (morning|afternoon|evening))/i.test(response)) {
+            enhancedResponse = getRandomEmoji('greeting') + ' ' + enhancedResponse;
+        }
+        
+        // Farewell detection
+        if (/(goodbye|bye|take care|see you|until next time)/i.test(lowerResponse)) {
+            enhancedResponse += ' ' + getRandomEmoji('farewell');
+        }
+        
+        // Emotional support detection
+        if (/(here for you|support you|understand|must be hard|difficult time)/i.test(lowerResponse)) {
+            enhancedResponse = getRandomEmoji('empathy') + ' ' + enhancedResponse;
+        }
+        
+        // Encouragement detection
+        if (/(you can do|believe in|keep going|step forward|progress)/i.test(lowerResponse)) {
+            enhancedResponse += ' ' + getRandomEmoji('encouragement');
+        }
+        
+        // Anxiety/Stress detection
+        if (/(anxious|worried|stress|overwhelm|nervous)/i.test(lowerResponse)) {
+            enhancedResponse = getRandomEmoji('anxiety') + ' ' + enhancedResponse;
+        }
+        
+        // Depression/Sadness detection
+        if (/(sad|depress|down|lonely|hopeless)/i.test(lowerResponse)) {
+            enhancedResponse = getRandomEmoji('depression') + ' ' + enhancedResponse;
+        }
+        
+        // Hope/Positivity detection
+        if (/(hope|better days|future|positive|bright)/i.test(lowerResponse)) {
+            enhancedResponse += ' ' + getRandomEmoji('hope');
+        }
+        
+        // Mindfulness/Relaxation detection
+        if (/(breathe|relax|mindful|present|calm)/i.test(lowerResponse)) {
+            enhancedResponse = getRandomEmoji('mindfulness') + ' ' + enhancedResponse;
+        }
+        
+        // Gratitude detection
+        if (/(thank|grateful|appreciate|blessed)/i.test(lowerResponse)) {
+            enhancedResponse += ' ' + getRandomEmoji('gratitude');
+        }
+        
+        // Sleep/Rest detection
+        if (/(sleep|rest|tired|exhausted|night)/i.test(lowerResponse)) {
+            enhancedResponse = getRandomEmoji('sleep') + ' ' + enhancedResponse;
+        }
+        
+        // Confidence/Strength detection
+        if (/(strong|capable|achieve|proud|confidence)/i.test(lowerResponse)) {
+            enhancedResponse += ' ' + getRandomEmoji('confidence');
+        }
+        
+        return enhancedResponse;
+    }
+
+    // Get random emoji with weighted selection
+    function getRandomEmoji(category) {
+        const emojis = emojiMap[category];
+        if (!emojis) return '';
+        
+        // Add variation to prevent repetitive emojis
+        const lastUsedEmoji = sessionStorage.getItem(`last_${category}_emoji`);
+        let selectedEmoji;
+        
+        do {
+            selectedEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+        } while (selectedEmoji === lastUsedEmoji && emojis.length > 1);
+        
+        sessionStorage.setItem(`last_${category}_emoji`, selectedEmoji);
+        return selectedEmoji;
+    }
+
+    // Message handling
+    function addMessage(content, isUser) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${isUser ? 'user' : 'therapist'}`;
+        
+        const messageContent = document.createElement('div');
+        messageContent.className = 'message-content';
+        
+        const text = document.createElement('p');
+        text.innerHTML = sanitizeAndRenderMessage(content);
+        
+        const timestamp = document.createElement('span');
+        timestamp.className = 'timestamp';
+        timestamp.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        
+        messageContent.appendChild(text);
+        messageContent.appendChild(timestamp);
+        messageDiv.appendChild(messageContent);
+        
+        messagesContainer.appendChild(messageDiv);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        
+        // Increment conversation count and show feedback after every 5 messages
+        conversationCount++;
+        if (conversationCount % 5 === 0) {
+            showFeedback();
         }
     }
 
-    // Initial theme icon setup
-    updateThemeIcons();
+    // Send message
+    async function sendMessage() {
+        const message = userInput.value.trim();
+        if (!message) return;
 
-    // Send Message
-    const sendButton = document.getElementById('send-button');
-    const userInput = document.getElementById('user-input');
-    const messagesContainer = document.getElementById('messages');
+        // Disable input and button while sending
+        userInput.disabled = true;
+        sendButton.disabled = true;
 
-    sendButton.addEventListener('click', sendMessage);
-    userInput.addEventListener('keypress', (e) => {
+        addMessage(message, true);
+        userInput.value = '';
+        userInput.style.height = 'auto';
+
+        try {
+            const response = await fetch('/generate_response', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 
+                    message: message,
+                    session_id: sessionId 
+                })
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('Server error:', errorText);
+                throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+            }
+
+            const data = await response.json();
+            
+            if (!data || !data.response) {
+                console.warn('Received empty or invalid response', data);
+                throw new Error('No valid response from server');
+            }
+
+            const aiResponse = data.response || 'I apologize, but I could not generate a response.';
+            
+            const enhancedResponse = addEmojisToResponse(aiResponse);
+            addMessage(enhancedResponse, false);
+        } catch (error) {
+            console.error('Detailed Error:', {
+                message: error.message,
+                stack: error.stack,
+                userMessage: message,
+                sessionId: sessionId
+            });
+            
+            // More informative error message
+            const errorMessages = [
+                'Sorry, there was an unexpected issue. Our team has been notified.',
+                'Communication hiccup! Could you try your message again?',
+                'Oops! Seems like our AI is taking a brief meditation break. Retry?'
+            ];
+            
+            addMessage(errorMessages[Math.floor(Math.random() * errorMessages.length)], false);
+        } finally {
+            // Re-enable input and button
+            userInput.disabled = false;
+            sendButton.disabled = false;
+        }
+    }
+
+    // Event listeners for sending messages
+    sendButton.addEventListener('click', function(e) {
+        e.preventDefault();
+        sendMessage();
+    });
+
+    userInput.addEventListener('keypress', function(e) {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
             sendMessage();
         }
     });
 
-    function sendMessage() {
-        const message = userInput.value.trim();
-        if (message) {
-            // Add user message
-            addMessage(message, 'user');
-            userInput.value = '';
+    // Auto-resize textarea
+    userInput.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = (this.scrollHeight) + 'px';
+    });
 
-            // Simulate AI response (replace with actual backend call)
-            setTimeout(() => {
-                addMessage('Processing your request...', 'ai');
-            }, 1000);
-        }
+    // Feedback handling
+    function showFeedback() {
+        feedbackContainer.style.display = 'block';
     }
 
-    function addMessage(content, type) {
-        const messageDiv = document.createElement('div');
-        messageDiv.classList.add('message', type);
-        
-        const messageContent = document.createElement('div');
-        messageContent.classList.add('message-content');
-        
-        const messageText = document.createElement('p');
-        messageText.textContent = content;
-        
-        const timestamp = document.createElement('span');
-        timestamp.classList.add('timestamp');
-        timestamp.textContent = new Date().toLocaleTimeString();
-        
-        messageContent.appendChild(messageText);
-        messageContent.appendChild(timestamp);
-        messageDiv.appendChild(messageContent);
-        
-        messagesContainer.appendChild(messageDiv);
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    }
+    feedbackStars.forEach(star => {
+        star.addEventListener('mouseover', function() {
+            const rating = this.dataset.rating;
+            updateStars(rating);
+        });
 
-    // Dynamic Message Animation
-    function animateMessages() {
-        const messages = document.querySelectorAll('.message');
-        messages.forEach((message, index) => {
-            message.style.animationDelay = `${index * 0.2}s`;
+        star.addEventListener('mouseout', function() {
+            updateStars(currentRating);
+        });
+
+        star.addEventListener('click', function() {
+            currentRating = this.dataset.rating;
+            updateStars(currentRating);
+        });
+    });
+
+    function updateStars(rating) {
+        feedbackStars.forEach(star => {
+            const starRating = star.dataset.rating;
+            star.className = starRating <= rating ? 'fas fa-star' : 'far fa-star';
         });
     }
-    animateMessages();
 
-    // Logo Hover Effect
-    const logo = document.querySelector('.main-logo');
-    if (logo) {
-        logo.addEventListener('mousemove', (e) => {
-            const rect = logo.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
+    submitFeedback.addEventListener('click', async function() {
+        const feedbackText = document.getElementById('feedback-text').value;
+        try {
+            await fetch('/feedback', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    score: currentRating,
+                    feedback: feedbackText
+                })
+            });
+            feedbackContainer.style.display = 'none';
+            currentRating = 0;
+            updateStars(0);
+            document.getElementById('feedback-text').value = '';
+        } catch (error) {
+            console.error('Error submitting feedback:', error);
+        }
+    });
+
+    // Engagement feature handlers
+    function showJournalSection() {
+        journalSection.style.display = 'block';
+        gratitudeSection.style.display = 'none';
+        mindfulnessTimer.style.display = 'none';
+    }
+
+    function showGratitudeSection() {
+        gratitudeSection.style.display = 'block';
+        journalSection.style.display = 'none';
+        mindfulnessTimer.style.display = 'none';
+    }
+
+    function showMindfulnessTimer() {
+        mindfulnessTimer.style.display = 'block';
+        journalSection.style.display = 'none';
+        gratitudeSection.style.display = 'none';
+    }
+
+    // Journal handling
+    document.getElementById('save-journal').addEventListener('click', function() {
+        const entry = document.getElementById('journal-entry').value;
+        if (entry) {
+            document.getElementById('journal-entry').value = '';
+            journalSection.style.display = 'none';
+            addMessage("Thank you for sharing your thoughts. Would you like to explore these feelings further?", false);
+        }
+    });
+
+    // Gratitude list handling
+    document.getElementById('add-gratitude').addEventListener('click', function() {
+        const gratitudeInput = document.getElementById('gratitude-input');
+        const gratitudeList = document.getElementById('gratitude-list');
+        
+        if (gratitudeInput.value) {
+            const li = document.createElement('li');
+            li.textContent = gratitudeInput.value;
+            gratitudeList.appendChild(li);
+            gratitudeInput.value = '';
             
-            logo.style.transform = `
-                perspective(500px) 
-                rotateX(${(y - rect.height/2) / 20}deg) 
-                rotateY(${-(x - rect.width/2) / 20}deg)
-            `;
-        });
-
-        logo.addEventListener('mouseleave', () => {
-            logo.style.transform = 'perspective(500px) rotateX(0deg) rotateY(0deg)';
-        });
-    }
-
-    // Dynamic Chat Input Expansion
-    const chatInput = document.querySelector('.input-container textarea');
-    if (chatInput) {
-        chatInput.addEventListener('input', function() {
-            this.style.height = 'auto';
-            this.style.height = `${this.scrollHeight}px`;
-        });
-    }
-
-    // Engagement Features
-    const notebookSection = document.querySelector('.notebook-section');
-    const quizSection = document.querySelector('.quiz-section');
-    const studyTimerSection = document.querySelector('.study-timer');
-    const feedbackContainer = document.querySelector('.feedback-container');
-
-    // Toggle sections (you can add more complex logic)
-    document.getElementById('save-notebook').addEventListener('click', () => {
-        const notebookEntry = document.getElementById('notebook-entry').value;
-        if (notebookEntry) {
-            alert('Notes saved!');
-            document.getElementById('notebook-entry').value = '';
+            if (gratitudeList.children.length >= 3) {
+                gratitudeSection.style.display = 'none';
+                addMessage("It's wonderful to practice gratitude. How do these positive reflections make you feel?", false);
+            }
         }
     });
 
-    document.getElementById('generate-quiz').addEventListener('click', () => {
-        const quizContainer = document.getElementById('quiz-container');
-        quizContainer.innerHTML = 'Quiz generated! (Placeholder)';
-    });
-
-    const timerDisplay = document.querySelector('.timer-display');
-    const startTimerButton = document.getElementById('start-timer');
-    let timer;
-
-    startTimerButton.addEventListener('click', () => {
-        let timeLeft = 25 * 60; // 25 minutes
+    // Mindfulness timer handling
+    let timerInterval;
+    document.getElementById('start-timer').addEventListener('click', function() {
+        const timerDisplay = document.querySelector('.timer-display');
+        let timeLeft = 300; // 5 minutes in seconds
         
-        timer = setInterval(() => {
+        this.disabled = true;
+        
+        timerInterval = setInterval(() => {
+            timeLeft--;
             const minutes = Math.floor(timeLeft / 60);
             const seconds = timeLeft % 60;
-            
-            timerDisplay.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+            timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
             
             if (timeLeft <= 0) {
-                clearInterval(timer);
-                alert('Pomodoro session complete!');
+                clearInterval(timerInterval);
+                this.disabled = false;
+                mindfulnessTimer.style.display = 'none';
+                addMessage("How do you feel after taking this mindful moment?", false);
             }
-            
-            timeLeft--;
         }, 1000);
-    });
-
-    // Feedback Stars
-    const feedbackStars = document.querySelectorAll('.feedback-stars i');
-    
-    feedbackStars.forEach(star => {
-        star.addEventListener('click', () => {
-            const rating = star.getAttribute('data-rating');
-            
-            // Reset all stars
-            feedbackStars.forEach(s => s.classList.remove('active'));
-            
-            // Activate stars up to the clicked one
-            feedbackStars.forEach(s => {
-                if (parseInt(s.getAttribute('data-rating')) <= rating) {
-                    s.classList.add('active');
-                }
-            });
-        });
-    });
-
-    document.getElementById('submit-feedback').addEventListener('click', () => {
-        const activeStars = document.querySelectorAll('.feedback-stars .active').length;
-        const feedbackText = document.getElementById('feedback-text').value;
-        
-        if (activeStars > 0) {
-            alert(`Thank you for your feedback! Rating: ${activeStars}/5`);
-            // Reset feedback
-            feedbackStars.forEach(star => star.classList.remove('active'));
-            document.getElementById('feedback-text').value = '';
-        } else {
-            alert('Please select a rating');
-        }
-    });
-
-    // Engagement Features Hover Effects
-    const featureCards = document.querySelectorAll('.feature-card');
-    featureCards.forEach(card => {
-        card.addEventListener('mousemove', (e) => {
-            const rect = card.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            
-            card.style.transform = `
-                perspective(500px) 
-                rotateX(${(y - rect.height/2) / 20}deg) 
-                rotateY(${-(x - rect.width/2) / 20}deg) 
-                scale(1.05)
-            `;
-        });
-
-        card.addEventListener('mouseleave', () => {
-            card.style.transform = 'perspective(500px) rotateX(0deg) rotateY(0deg) scale(1)';
-        });
     });
 });

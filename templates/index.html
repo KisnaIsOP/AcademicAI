@@ -3,327 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hecker - Your AI Learning Companion</title>
+    <title>Hecker AI</title>
     
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/logo.ico') }}">
+    
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}">{# Favicon #}
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --font-primary: 'Inter', sans-serif;
-            --bg-light: #ffffff;
-            --bg-dark: #121212;
-            --text-light: #1a1a1a;
-            --text-dark: #e0e0e0;
-            --primary-color: #10a37f;
-            --secondary-color: #1a1a1a;
-            --input-bg-light: #f7f7f8;
-            --input-bg-dark: #202123;
-            --border-color-light: #d1d5db;
-            --border-color-dark: #444;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: var(--font-primary);
-        }
-
-        body {
-            font-family: var(--font-primary);
-            background-color: var(--bg-light);
-            color: var(--text-light);
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
-
-        body.dark-mode {
-            background-color: var(--bg-dark);
-            color: var(--text-dark);
-        }
-
-        .container {
-            max-width: 768px;
-            margin: 0 auto;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-        }
-
-        .chat-container {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            background-color: var(--bg-light);
-            border: 1px solid var(--border-color-light);
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            margin: 20px 0;
-        }
-
-        .dark-mode .chat-container {
-            background-color: var(--bg-dark);
-            border-color: var(--border-color-dark);
-            box-shadow: 0 1px 3px rgba(255,255,255,0.1);
-        }
-
-        .messages {
-            flex-grow: 1;
-            overflow-y: auto;
-            padding: 24px 24px 0;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            scrollbar-width: thin;
-            scrollbar-color: rgba(0,0,0,0.2) transparent;
-        }
-
-        .messages::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .messages::-webkit-scrollbar-thumb {
-            background-color: rgba(0,0,0,0.2);
-            border-radius: 4px;
-        }
-
-        .dark-mode .messages::-webkit-scrollbar-thumb {
-            background-color: rgba(255,255,255,0.2);
-        }
-
-        .message {
-            display: flex;
-            align-self: flex-start;
-            max-width: 90%;
-            width: fit-content;
-            padding: 12px 16px;
-            border-radius: 12px;
-            position: relative;
-            line-height: 1.4;
-            font-size: 14px;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            animation: slideIn 0.5s ease-out;
-            transition: all 0.3s ease;
-        }
-
-        .message:hover {
-            transform: scale(1.02);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateY(20px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .message.user {
-            align-self: flex-end;
-            background-color: var(--primary-color);
-            color: white;
-            border-bottom-right-radius: 4px;
-            background: linear-gradient(to right, #ff7eb3, #ff758c);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            color: white;
-        }
-
-        .message.ai {
-            background-color: var(--input-bg-light);
-            color: var(--text-light);
-            border-bottom-left-radius: 4px;
-            background: linear-gradient(to right, #10a37f, #1db954);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            color: white;
-        }
-
-        .dark-mode .message.ai {
-            background-color: var(--input-bg-dark);
-            color: var(--text-dark);
-        }
-
-        .input-container {
-            display: flex;
-            align-items: center;
-            padding: 16px 24px;
-            background-color: var(--bg-light);
-            border-top: 1px solid var(--border-color-light);
-        }
-
-        .dark-mode .input-container {
-            background-color: var(--bg-dark);
-            border-top-color: var(--border-color-dark);
-        }
-
-        textarea {
-            flex-grow: 1;
-            resize: none;
-            padding: 10px;
-            border: 1px solid var(--border-color-light);
-            border-radius: 6px;
-            margin-right: 12px;
-            background-color: var(--input-bg-light);
-            color: var(--text-light);
-            font-size: 14px;
-            line-height: 1.4;
-            max-height: 200px;
-            overflow-y: auto;
-            transition: border-color 0.2s ease;
-            font-family: var(--font-primary);
-            font-weight: 400;
-        }
-
-        .dark-mode textarea {
-            background-color: var(--input-bg-dark);
-            color: var(--text-dark);
-            border-color: var(--border-color-dark);
-        }
-
-        textarea::placeholder {
-            color: #6b7280;
-        }
-
-        .dark-mode textarea::placeholder {
-            color: #9ca3af;
-        }
-
-        textarea:focus {
-            outline: none;
-            border-color: var(--primary-color);
-        }
-
-        #send-button {
-            background: none;
-            border: none;
-            color: #6b7280;
-            cursor: pointer;
-            transition: color 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        #send-button:hover {
-            color: var(--primary-color);
-        }
-
-        .dark-mode #send-button {
-            color: #9ca3af;
-        }
-
-        .dark-mode #send-button:hover {
-            color: var(--primary-color);
-        }
-
-        .typing-indicator {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 10px;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: scale(1); opacity: 0.5; }
-            50% { transform: scale(1.5); opacity: 1; }
-        }
-
-        .typing-dot {
-            width: 8px;
-            height: 8px;
-            background-color: var(--primary-color);
-            border-radius: 50%;
-            margin: 0 4px;
-            animation: bounce 1.4s infinite;
-        }
-
-        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
-
-        body {
-            transition: background 1s ease;
-        }
-
-        .message-wrapper {
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-        }
-
-        .avatar {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
-        .ai-avatar {
-            background: linear-gradient(45deg, #10a37f, #1db954);
-        }
-
-        .user-avatar {
-            background: linear-gradient(45deg, #ff7eb3, #ff758c);
-        }
-
-        #suggestions {
-            position: absolute;
-            bottom: 100%;
-            left: 0;
-            right: 0;
-            background-color: var(--input-bg-light);
-            border: 1px solid var(--border-color-light);
-            border-radius: 8px;
-            max-height: 200px;
-            overflow-y: auto;
-            z-index: 10;
-            display: none;
-        }
-
-        #suggestions.visible {
-            display: block;
-        }
-
-        #suggestions p {
-            padding: 8px 12px;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-        }
-
-        #suggestions p:hover {
-            background-color: rgba(16, 163, 127, 0.1);
-        }
-
-        .streak-counter {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: rgba(16, 163, 127, 0.1);
-            padding: 8px 12px;
-            border-radius: 20px;
-            font-size: 14px;
-        }
-
-        h1, h2, h3, h4, h5, h6 {
-            font-family: var(--font-primary);
-            font-weight: 600;
-        }
-
-        .message-content p {
-            font-family: var(--font-primary);
-            font-weight: 400;
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <div class="theme-toggle">
@@ -332,35 +18,27 @@
             <i class="fas fa-moon dark-icon"></i>
         </button>
     </div>
-    
     <div class="container">
         <header>
             <div class="logo-container">
-                <img src="{{ url_for('static', filename='images/main_logo.jpg') }}" alt="Hecker Logo" class="main-logo">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Hecker AI Logo" class="main-logo">
             </div>
-            <h1>Hecker <i class="fas fa-robot"></i></h1>
-            <p class="subtitle">Your intelligent AI learning companion</p>
+            <h1>Hecker <i class="fas fa-heart"></i></h1>
+            <p class="subtitle">Your exam handler</p>
         </header>
 
         <div class="chat-container">
             <div class="messages" id="messages">
-                <div class="message ai">
+                <div class="message therapist">
                     <div class="message-content">
-                        <p>{{ initial_question if initial_question else "Welcome! What would you like to learn today?" }}</p>
+                        <p>{{ initial_question if initial_question else "Welcome back! How are you feeling today?" }}</p>
                         <span class="timestamp">{{ now }}</span>
                     </div>
                 </div>
             </div>
 
-            <div class="typing-indicator" style="display: none;">
-                <div class="typing-dot"></div>
-                <div class="typing-dot"></div>
-                <div class="typing-dot"></div>
-                <span class="ml-2 text-gray-500">Hecker is thinking...</span>
-            </div>
-
             <div class="input-container">
-                <textarea id="user-input" placeholder="Ask a learning question..." rows="3"></textarea>
+                <textarea id="user-input" placeholder="Share what's on your mind..." rows="3"></textarea>
                 <button id="send-button">
                     <i class="fas fa-paper-plane"></i>
                 </button>
@@ -369,28 +47,29 @@
 
         <!-- Engagement Features -->
         <div class="engagement-features">
-            <div class="notebook-section" style="display: none;">
-                <h3>Study Notebook</h3>
-                <textarea id="notebook-entry" placeholder="Take notes here..."></textarea>
-                <button id="save-notebook">Save Notes</button>
+            <div class="journal-section" style="display: none;">
+                <h3>Journal Entry</h3>
+                <textarea id="journal-entry" placeholder="Write your thoughts here..."></textarea>
+                <button id="save-journal">Save Entry</button>
             </div>
 
-            <div class="quiz-section" style="display: none;">
-                <h3>Quick Quiz</h3>
-                <div id="quiz-container"></div>
-                <button id="generate-quiz">Generate Quiz</button>
+            <div class="gratitude-section" style="display: none;">
+                <h3>Gratitude List</h3>
+                <ul id="gratitude-list"></ul>
+                <input type="text" id="gratitude-input" placeholder="I'm grateful for...">
+                <button id="add-gratitude">Add</button>
             </div>
 
-            <div class="study-timer" style="display: none;">
-                <h3>Study Timer</h3>
-                <div class="timer-display">25:00</div>
-                <button id="start-timer">Start Pomodoro</button>
+            <div class="mindfulness-timer" style="display: none;">
+                <h3>Mindfulness Timer</h3>
+                <div class="timer-display">5:00</div>
+                <button id="start-timer">Start</button>
             </div>
         </div>
 
         <!-- Feedback Section -->
         <div class="feedback-container" style="display: none;">
-            <h3>How helpful was this learning session?</h3>
+            <h3>How helpful was this conversation?</h3>
             <div class="feedback-stars">
                 <i class="far fa-star" data-rating="1"></i>
                 <i class="far fa-star" data-rating="2"></i>
@@ -398,249 +77,36 @@
                 <i class="far fa-star" data-rating="4"></i>
                 <i class="far fa-star" data-rating="5"></i>
             </div>
-            <textarea id="feedback-text" placeholder="Any suggestions for improvement? (optional)"></textarea>
+            <textarea id="feedback-text" placeholder="Any additional feedback? (optional)"></textarea>
             <button id="submit-feedback">Submit Feedback</button>
         </div>
 
-        <!-- Learning Resources -->
+        <!-- Support Resources -->
         <div class="support-resources">
-            <h3>Learning Resources</h3>
+            <h3>Academic Resources</h3>
             <ul>
-                <li><i class="fas fa-book"></i> <a href="https://www.khanacademy.org" target="_blank">Khan Academy</a></li>
-                <li><i class="fas fa-globe"></i> <a href="https://www.coursera.org" target="_blank">Coursera</a></li>
-                <li><i class="fas fa-graduation-cap"></i> <a href="https://www.edx.org" target="_blank">edX</a></li>
+                <li><i class="fas fa-graduation-cap"></i> Khan Academy</li>
+                <li><i class="fas fa-external-link-alt"></i> <a href="https://www.khanacademy.org/" target="_blank">Khan Academy</a></li>
+                
+                <li><i class="fas fa-brain"></i> Active Recall</li>
+                <li><i class="fas fa-external-link-alt"></i> <a href="https://www.active-recall.com/" target="_blank">Active Recall Resources</a></li>
+                
+                <li><i class="fas fa-music"></i> Study Motivation Playlist</li>
+                <li><i class="fas fa-external-link-alt"></i> <a href="https://open.spotify.com/playlist/0l8dNnYjcqMA3IohaLuWyh?si=da7e95e0b6f54313" target="_blank">Spotify Study Playlists</a></li>
+                
+                <li><i class="fas fa-laptop-code"></i> <a href="https://github.com/KisnaIsOP/AcademicAi" target="_blank">Project Source Code</a></li>
             </ul>
         </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const messagesContainer = document.getElementById('messages');
-            const userInput = document.getElementById('user-input');
-            const sendButton = document.getElementById('send-button');
-            const themeToggle = document.getElementById('themeToggle');
-            const errorContainer = document.getElementById('error-container');
-            const typingIndicator = document.querySelector('.typing-indicator');
-
-            // Theme Toggle
-            themeToggle.addEventListener('click', () => {
-                document.body.classList.toggle('dark-mode');
-                localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
-            });
-
-            // Restore Theme
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark') {
-                document.body.classList.add('dark-mode');
-            }
-
-            // Enhanced Markdown and Math Rendering
-            function renderMarkdownAndMath(text) {
-                // Markdown rendering
-                const markedText = marked.parse(text);
-                
-                // Create a temporary container
-                const container = document.createElement('div');
-                container.innerHTML = markedText;
-
-                // KaTeX for inline and block math
-                container.querySelectorAll('code.math').forEach(el => {
-                    try {
-                        katex.render(el.textContent, el, {
-                            throwOnError: false,
-                            displayMode: el.classList.contains('block')
-                        });
-                    } catch (err) {
-                        console.warn('KaTeX rendering error:', err);
-                    }
-                });
-
-                // MathJax for additional math support
-                MathJax.typeset([container]);
-
-                // Symbol and problem highlighting
-                container.innerHTML = container.innerHTML.replace(
-                    /\[symbol:(.*?)\]/g, 
-                    '<span class="symbol-highlight">$1</span>'
-                );
-
-                // Problem solving template
-                container.innerHTML = container.innerHTML.replace(
-                    /\[problem\](.*?)\[\/problem\]/gs, 
-                    (match, content) => {
-                        const parts = content.split('|');
-                        const statement = parts[0].trim();
-                        const steps = parts.slice(1).map(step => step.trim());
-
-                        return `
-                            <div class="problem-container">
-                                <div class="problem-statement">${statement}</div>
-                                <div class="solution-steps">
-                                    ${steps.map(step => `
-                                        <div class="solution-step">${step}</div>
-                                    `).join('')}
-                                </div>
-                            </div>
-                        `;
-                    }
-                );
-
-                return container.innerHTML;
-            }
-
-            // Add Message
-            function addMessage(content, type) {
-                const messageDiv = document.createElement('div');
-                messageDiv.classList.add('message', type);
-                messageDiv.innerHTML = renderMarkdownAndMath(content);
-                messagesContainer.appendChild(messageDiv);
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            }
-
-            // Show/Hide Typing Indicator
-            function showTypingIndicator() {
-                typingIndicator.style.display = 'flex';
-            }
-
-            function hideTypingIndicator() {
-                typingIndicator.style.display = 'none';
-            }
-
-            // Send Query
-            async function sendQuery(query, regenerate = false) {
-                try {
-                    errorContainer.textContent = '';
-                    showTypingIndicator();
-
-                    const response = await fetch('/api/query', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ query, regenerate })
-                    });
-
-                    const data = await response.json();
-                    hideTypingIndicator();
-
-                    if (data.success) {
-                        addMessage(data.response, 'ai');
-                    } else {
-                        errorContainer.textContent = data.error || 'An unexpected error occurred.';
-                    }
-                } catch (error) {
-                    hideTypingIndicator();
-                    errorContainer.textContent = 'Network error. Please try again.';
-                    console.error('Query error:', error);
-                }
-            }
-
-            // Event Listeners
-            sendButton.addEventListener('click', () => {
-                const query = userInput.value.trim();
-                if (query) {
-                    addMessage(query, 'user');
-                    sendQuery(query);
-                    userInput.value = '';
-                }
-            });
-
-            userInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    sendButton.click();
-                }
-            });
-        });
-
-        // Dynamic Background Based on Time
-        function updateBackgroundByTime() {
-            const currentHour = new Date().getHours();
-            const body = document.body;
-            
-            if (currentHour >= 6 && currentHour < 18) {
-                body.style.background = 'linear-gradient(to bottom, #a8edea, #fed6e3)';
-            } else {
-                body.style.background = 'linear-gradient(to bottom, #2b5876, #4e4376)';
-            }
-        }
-
-        // Real-Time Suggestions
-        function setupSuggestions() {
-            const userInput = document.getElementById('user-input');
-            const suggestions = document.getElementById('suggestions');
-            const sampleSuggestions = [
-                "What is the Pythagorean theorem?",
-                "Explain photosynthesis",
-                "How do black holes work?",
-                "Define quantum mechanics"
-            ];
-
-            userInput.addEventListener('input', (e) => {
-                const query = e.target.value.toLowerCase();
-                if (query.length > 2) {
-                    const filteredSuggestions = sampleSuggestions.filter(
-                        suggestion => suggestion.toLowerCase().includes(query)
-                    );
-                    
-                    suggestions.innerHTML = filteredSuggestions.map(
-                        suggestion => `<p onclick="selectSuggestion('${suggestion}')">${suggestion}</p>`
-                    ).join('');
-                    
-                    suggestions.classList.toggle('visible', filteredSuggestions.length > 0);
-                } else {
-                    suggestions.classList.remove('visible');
-                }
-            });
-        }
-
-        function selectSuggestion(suggestion) {
-            document.getElementById('user-input').value = suggestion;
-            document.getElementById('suggestions').classList.remove('visible');
-        }
-
-        // Speech-to-Text (if supported)
-        function setupSpeechToText() {
-            if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
-                const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-                recognition.continuous = false;
-                recognition.interimResults = false;
-
-                const speechButton = document.createElement('button');
-                speechButton.innerHTML = '🎤';
-                speechButton.classList.add('speech-button');
-                document.querySelector('.input-container').appendChild(speechButton);
-
-                speechButton.addEventListener('click', () => {
-                    recognition.start();
-                });
-
-                recognition.onresult = (event) => {
-                    const transcript = event.results[0][0].transcript;
-                    document.getElementById('user-input').value = transcript;
-                };
-            }
-        }
-
-        // Streak Counter
-        function updateStreak() {
-            let streak = localStorage.getItem('educompanion_streak') || 0;
-            streak++;
-            localStorage.setItem('educompanion_streak', streak);
-            
-            const streakCounter = document.createElement('div');
-            streakCounter.classList.add('streak-counter');
-            streakCounter.innerHTML = `🎉 Streak: <span id="streak">${streak}</span> days!`;
-            document.body.appendChild(streakCounter);
-        }
-
-        // Initialize Dynamic Features
-        document.addEventListener('DOMContentLoaded', () => {
-            updateBackgroundByTime();
-            setupSuggestions();
-            setupSpeechToText();
-            updateStreak();
-        });
-    </script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    
+    <!-- Cute Footer -->
+    <footer class="cute-footer">
+        <div class="footer-content">
+            <p>✨ Crafted with 💖 and endless cups of coffee</p>
+            <p>Made with 💡 by the brilliant Kisna 🚀</p>
+        </div>
+    </footer>
 </body>
 </html>

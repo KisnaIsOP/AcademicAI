@@ -141,18 +141,15 @@ def generate_emoji():
 
 def sanitize_response(text):
     """Clean and format the AI response"""
-    # Remove excessive whitespace
-    text = re.sub(r'\n\s*\n', '\n\n', text)
-    
-    # Add markdown formatting
-    text = re.sub(r'(Step \d+):', r'**\1:**', text)
-    text = re.sub(r'(Tip):', r'**\1:**', text)
-    
-    # Enhance mathematical notation
-    text = text.replace('formula:', '**Formula:** $')
-    text = text.replace('equation:', '**Equation:** $')
-    
-    return text
+    # Preserve Markdown-like formatting
+    formatting_preserving_sanitization = (
+        text.replace('&', '&amp;')
+            .replace('<', '&lt;')
+            .replace('>', '&gt;')
+            .replace('"', '&quot;')
+            .replace("'", '&#039;')
+    )
+    return formatting_preserving_sanitization
 
 @app.route('/')
 def home():
