@@ -221,11 +221,11 @@ def format_mathematical_notation(text):
     equation_patterns = [
         # Viscosity equation
         (r'viscosity\s*=\s*(\w+)\s*/\s*(\w+)', 
-         r'$$ η = \frac{{{1}}}{{{2}}} $$'),
+         r'$$ η = \frac{{{0}}}{{{1}}} $$'),
         
         # General fraction representation
         (r'(\w+)\s*/\s*(\w+)', 
-         r'$$ \frac{{{1}}}{{{2}}} $$')
+         r'$$ \frac{{{0}}}{{{1}}} $$')
     ]
     
     # Replace physical quantity names with symbolic notation
@@ -234,7 +234,11 @@ def format_mathematical_notation(text):
     
     # Apply equation formatting
     for pattern, replacement in equation_patterns:
-        text = re.sub(pattern, replacement, text, flags=re.IGNORECASE)
+        def replace_equation(match):
+            # Use .format() with explicit indices to avoid f-string issues
+            return replacement.format(match.group(1), match.group(2))
+        
+        text = re.sub(pattern, replace_equation, text, flags=re.IGNORECASE)
     
     return text
 
