@@ -195,6 +195,49 @@ def sanitize_response(text):
     
     return formatted_text
 
+def format_mathematical_notation(text):
+    """
+    Standardize mathematical notation across all AI responses.
+    
+    Transformation rules:
+    1. Convert common physical quantities to symbolic notation
+    2. Format fractions and complex expressions in stacked/LaTeX format
+    3. Ensure clear, readable mathematical representation
+    """
+    # Mapping of common physical quantities to symbolic notation
+    notation_map = {
+        'viscosity': 'η',
+        'shear stress': 'τ',
+        'shear rate': 'γ̇',
+        'force': 'F',
+        'area': 'A',
+        'velocity': 'v',
+        'time': 't',
+        'mass': 'm',
+        'length': 'l'
+    }
+    
+    # Equation formatting patterns
+    equation_patterns = [
+        # Viscosity equation
+        (r'viscosity\s*=\s*(\w+)\s*/\s*(\w+)', 
+         r'$$ η = \frac{{{1}}}{{{2}}} $$'),
+        
+        # General fraction representation
+        (r'(\w+)\s*/\s*(\w+)', 
+         r'$$ \frac{{{1}}}{{{2}}} $$')
+    ]
+    
+    # Replace physical quantity names with symbolic notation
+    for word, symbol in notation_map.items():
+        text = re.sub(r'\b{}\b'.format(word), symbol, text, flags=re.IGNORECASE)
+    
+    # Apply equation formatting
+    for pattern, replacement in equation_patterns:
+        text = re.sub(pattern, replacement, text, flags=re.IGNORECASE)
+    
+    return text
+
 @app.route('/')
 def home():
     now = datetime.now().strftime("%I:%M %p")
@@ -250,32 +293,31 @@ def generate_response_with_context(query):
         response = f"""😮‍💨 💗 Dimensional Analysis of Viscosity
 
 **Step 1: Define the Physical Quantity**
-Viscosity is a measure of a fluid's resistance to flow, defined as the ratio of shear stress to shear rate.
+Viscosity (η) is a measure of a fluid's resistance to flow, defined as the ratio of shear stress to shear rate.
 
-**Formula Representation:**
-$$ \\text{{Viscosity}} = \\frac{{\\text{{Shear Stress}}}}{{\\text{{Shear Rate}}}} = \\frac{{\\text{{Pa}}}}{{\\text{{s}}^{{-1}}}} $$
+**Symbolic Representation:**
+$$ η = \frac{τ}{γ̇} $$
 
 **Step 2: Dimensional Analysis of Components**
-- Shear Stress: Force per unit area
+- Shear Stress (τ): Force per unit area
   * Dimensions: $[M L T^{{-2}}] / [L^2] = [M L^{{-1}} T^{{-2}}]$
-- Shear Rate: Velocity gradient
+- Shear Rate (γ̇): Velocity gradient
   * Dimensions: $[L T^{{-1}}] / [L] = [T^{{-1}}]$
 
 **Step 3: Dimensional Consistency**
 Combining the dimensions:
-$$ \\left[\\frac{{\\text{{Shear Stress}}}}{{\\text{{Shear Rate}}}}\\right] = \\frac{{[M L^{{-1}} T^{{-2}}]}}{{[T^{{-1}}]}} = [M L^{{-1}} T^{{-1}}} $$
+$$ \left[\frac{τ}{γ̇}\right] = \frac{[M L^{{-1}} T^{{-2}}]}{[T^{{-1}}]} = [M L^{{-1}} T^{{-1}}} $$
 
 **Step 4: Physical Interpretation**
 The dimensional analysis confirms that viscosity has consistent units:
 - Mass per length per time
-- Typically expressed in Pascal-seconds (Pa·s) or Poise (P)
+- Typically expressed in Pascal-seconds (Pa·s)
 
 **Key Insights:**
 - Viscosity quantifies a fluid's internal resistance to flow
 - Dimensional analysis validates the physical meaning of the quantity
-- Helps understand the fundamental nature of fluid properties
 """
-        return response
+        return format_mathematical_notation(response)
 
     # Default response generation logic
     context_prompt = f"""\
@@ -288,13 +330,16 @@ Guidelines:
 2. Break down complex topics into digestible steps
 3. Use engaging and accessible language
 4. Include practical examples or real-world applications
+5. Use standard mathematical notation for equations
 
 Query: {query}
 """
 
     try:
         response = model.generate_content(context_prompt)
-        return sanitize_response(response.text)
+        # Apply mathematical notation formatting to the response
+        formatted_response = format_mathematical_notation(response.text)
+        return sanitize_response(formatted_response)
     except Exception as e:
         app.logger.error(f"Response generation error: {e}")
         return f"I'm sorry, I encountered an error processing your query. {generate_emoji()}"
