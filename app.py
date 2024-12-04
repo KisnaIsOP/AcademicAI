@@ -168,57 +168,21 @@ def format_solution(text):
 
 def sanitize_response(text):
     """Clean and format the AI response"""
-    # Enhanced mathematical symbol and formatting support
-    symbol_replacements = {
-        r'\alpha': '&alpha;',
-        r'\beta': '&beta;',
-        r'\gamma': '&gamma;',
-        r'\delta': '&delta;',
-        r'\epsilon': '&epsilon;',
-        r'\zeta': '&zeta;',
-        r'\eta': '&eta;',
-        r'\theta': '&theta;',
-        r'\lambda': '&lambda;',
-        r'\mu': '&mu;',
-        r'\nu': '&nu;',
-        r'\xi': '&xi;',
-        r'\pi': '&pi;',
-        r'\sigma': '&sigma;',
-        r'\tau': '&tau;',
-        r'\phi': '&phi;',
-        r'\psi': '&psi;',
-        r'\omega': '&omega;',
-        r'\infty': '&infin;',
-        r'\nabla': '&nabla;',
-        r'\partial': '&part;',
-        r'\sum': '&sum;',
-        r'\prod': '&prod;',
-        r'\int': '&int;',
-    }
-
-    # Replace mathematical symbols
-    for symbol, replacement in symbol_replacements.items():
-        text = text.replace(symbol, replacement)
-
-    if any(keyword in text.lower() for keyword in ['solution:', 'solve:', 'find:', 'calculate:']):
-        text = format_solution(text)
+    # Enhanced formatting to prevent multiple boxes
     
-    # Enhance step and section formatting
-    text = re.sub(r'^(Step\s*\d+:)', r'\n**\1**', text, flags=re.MULTILINE)
-    text = re.sub(r'^(Conclusion:)', r'\n**\1**', text, flags=re.MULTILINE)
+    # Normalize line breaks and spacing
+    text = re.sub(r'\n{3,}', '\n\n', text)
     
-    # Improve paragraph and line break handling
-    text = re.sub(r'\n{2,}', '\n\n', text)  # Normalize multiple newlines
+    # Improve step and section formatting
+    text = re.sub(r'^(Step\s*\d+:)', r'**\1**', text, flags=re.MULTILINE)
+    text = re.sub(r'^(Conclusion:)', r'**\1**', text, flags=re.MULTILINE)
     
     # Format equations and mathematical expressions
-    text = re.sub(r'\$\$(.*?)\$\$', r'\n**Equation:** \1\n', text, flags=re.DOTALL)
+    text = re.sub(r'\$\$(.*?)\$\$', r'**Equation:** \1', text, flags=re.DOTALL)
     text = re.sub(r'\$(.*?)\$', r'*\1*', text)
     
-    # Add emphasis to key terms
-    text = re.sub(r'\b(viscosity|shear stress|shear rate)\b', r'**\1**', text, flags=re.IGNORECASE)
-    
-    # Preserve code and technical formatting
-    text = re.sub(r'`(.*?)`', r'\n```\n\1\n```\n', text)
+    # Preserve overall response structure
+    text = text.strip()
     
     # Sanitize HTML to prevent XSS
     formatted_text = (

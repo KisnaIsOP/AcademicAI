@@ -71,62 +71,46 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Improved Symbol and Emoji Support
     function sanitizeAndRenderMessage(message) {
-        // Process math equations first
-        message = message.replace(/\$\$(.*?)\$\$/g, (match, equation) => {
-            return `<div class="math-block">${match}</div>`;
-        });
-        message = message.replace(/\$(.*?)\$/g, (match, equation) => {
-            return `<span class="math-inline">${match}</span>`;
-        });
-
-        // Process steps and formatting
-        const lines = message.split('\n');
-        let formattedLines = lines.map(line => {
-            // Format step numbers and bullet points
-            line = line.replace(/^(\d+\.|Step \d+:)(.*)/, '<div class="step"><strong>$1</strong>$2</div>');
-            line = line.replace(/^[-*•](.*)/, '<div class="step">$1</div>');
+        // Prevent multiple boxes by unified processing
+        function processLine(line) {
+            // Handle step indicators
+            line = line.replace(/^(Step\s*\d+:)/, '<strong>$1</strong>');
             
-            // Format headers
+            // Handle headers
             line = line.replace(/^(#{1,4})\s+(.*)/, (match, hashes, text) => {
                 const level = hashes.length;
                 return `<h${level}>${text}</h${level}>`;
             });
             
-            // Format code blocks
-            if (line.startsWith('```')) {
-                return '<pre><code>';
-            } else if (line.endsWith('```')) {
-                return '</code></pre>';
-            }
-            
-            // Format inline code
-            line = line.replace(/`([^`]+)`/g, '<code>$1</code>');
-            
-            // Format bold and italic
+            // Handle inline formatting
             line = line.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
             line = line.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+            line = line.replace(/`([^`]+)`/g, '<code>$1</code>');
             
             return line;
-        });
-
-        // Join lines with proper spacing and handle paragraphs
-        message = formattedLines.join('\n')
-            .replace(/\n\n+/g, '</p><p>') // Convert multiple newlines to paragraphs
-            .replace(/\n/g, '<br>'); // Convert single newlines to line breaks
-
-        // Wrap in paragraph tags if not already wrapped
-        if (!message.startsWith('<p>')) {
-            message = '<p>' + message + '</p>';
         }
 
-        // Trigger MathJax rendering after content is added
+        // Process the entire message
+        let processedLines = message.split('\n').map(processLine);
+        
+        // Join lines, preserving structure
+        let formattedMessage = processedLines.join('\n')
+            .replace(/\n\n+/g, '</p><p>')  // Convert multiple newlines to paragraphs
+            .replace(/\n/g, '<br>');  // Convert single newlines to line breaks
+
+        // Wrap in paragraph if not already wrapped
+        if (!formattedMessage.startsWith('<p>')) {
+            formattedMessage = `<p>${formattedMessage}</p>`;
+        }
+
+        // Trigger MathJax rendering if available
         setTimeout(() => {
             if (window.MathJax) {
                 window.MathJax.typeset();
             }
         }, 100);
 
-        return message;
+        return formattedMessage;
     }
 
     // Enhanced context detection for better emoji placement

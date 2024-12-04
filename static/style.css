@@ -148,36 +148,31 @@ body {
 .therapist .message-content {
     background: white;
     border: 1px solid var(--border-color);
-    border-bottom-left-radius: 6px;
+    border-radius: 12px;
+    padding: 20px;
+    line-height: 1.6;
     box-shadow: 0 4px 20px var(--shadow-color);
     white-space: pre-line;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 .therapist .message-content p {
     margin: 0.8em 0;
 }
 
-.therapist .message-content ul,
-.therapist .message-content ol {
-    margin: 0.8em 0;
-    padding-left: 1.5em;
-}
-
-.therapist .message-content li {
-    margin: 0.5em 0;
-}
-
-.therapist .message-content h1,
-.therapist .message-content h2,
-.therapist .message-content h3,
-.therapist .message-content h4 {
-    margin: 1em 0 0.5em 0;
-    color: var(--text-color);
+.therapist .message-content strong {
+    color: var(--primary-color);
     font-weight: 600;
 }
 
+.therapist .message-content em {
+    color: var(--secondary-color);
+    font-style: italic;
+}
+
 .therapist .message-content .step {
-    margin: 1em 0;
+    margin: 0.8em 0;
     padding-left: 1.5em;
     position: relative;
 }
@@ -185,63 +180,26 @@ body {
 .therapist .message-content .step:before {
     content: "•";
     position: absolute;
-    left: 0.5em;
+    left: 0;
     color: var(--primary-color);
 }
 
-.therapist .message-content pre {
-    background: var(--code-background);
-    padding: 1em;
-    border-radius: 8px;
-    margin: 0.8em 0;
-    overflow-x: auto;
-}
-
+.therapist .message-content pre,
 .therapist .message-content code {
-    font-family: 'Consolas', 'Monaco', monospace;
-    background: var(--code-background);
-    padding: 0.2em 0.4em;
-    border-radius: 4px;
-    font-size: 0.9em;
-}
-
-.therapist .message-content em {
-    color: var(--primary-text-highlight);
-    font-style: italic;
-}
-
-.therapist .message-content strong {
-    color: var(--secondary-text-highlight);
-    font-weight: 600;
-}
-
-.therapist .message-content .math-symbol,
-.therapist .message-content .math-inline,
-.therapist .message-content .math-block {
-    color: var(--primary-color);
-    font-weight: bold;
-    background-color: rgba(76, 175, 80, 0.1);  /* Soft green background */
-    padding: 0.2em 0.4em;
-    border-radius: 4px;
-    font-family: 'Consolas', 'Monaco', monospace;
-}
-
-.therapist .message-content pre {
     background-color: var(--code-background);
     color: var(--code-text-color);
-    border: 1px solid var(--border-color);
-    padding: 1em;
-    border-radius: 8px;
-    overflow-x: auto;
+    border-radius: 6px;
+    padding: 0.5em;
+    margin: 0.8em 0;
+    display: block;
+    white-space: pre-wrap;
+    word-wrap: break-word;
 }
 
-.therapist .message-content strong {
-    color: var(--secondary-color);
-}
-
-.therapist .message-content em {
-    color: var(--primary-color);
-    font-style: italic;
+[data-theme="dark"] .therapist .message-content {
+    background-color: #1E1E1E;
+    border-color: #333;
+    color: #E0E0E0;
 }
 
 .timestamp {
