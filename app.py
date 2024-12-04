@@ -217,13 +217,27 @@ def format_mathematical_notation(text):
         'length': 'l'
     }
     
+    # Unicode superscript mapping
+    superscript_map = {
+        '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', 
+        '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹',
+        '-': '⁻'
+    }
+    
     # Replace physical quantity names with symbolic notation
     for word, symbol in notation_map.items():
         text = re.sub(r'\b{}\b'.format(word), symbol, text, flags=re.IGNORECASE)
     
-    # Simplify exponent and fraction representations
-    text = re.sub(r'\^{{(\d+)}}', r'^{\1}', text)
-    text = re.sub(r'\[\s*(\w+)\s*([+-])\s*(\d+)\s*\]', r'[\1^{\2\3}]', text)
+    # Replace power notation with Unicode superscripts
+    def replace_power(match):
+        base = match.group(1)
+        power = match.group(2)
+        # Convert each character of power to superscript
+        superscript_power = ''.join(superscript_map.get(char, char) for char in power)
+        return f"{base}{superscript_power}"
+    
+    # Replace r^2 style notation with superscript
+    text = re.sub(r'(\w+)\^{?(-?\d+)}?', replace_power, text)
     
     return text
 
