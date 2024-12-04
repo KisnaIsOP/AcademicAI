@@ -247,37 +247,33 @@ def generate_response_with_context(query):
     
     # Special handling for dimensional analysis and scientific queries
     if any(keyword in query.lower() for keyword in ['dimension', 'dimensional analysis', 'viscosity', 'prove', 'derivation']):
-        response = f"""😮‍💨 💗 Dimensional Analysis of {query.split()[-1].capitalize()}
+        response = f"""😮‍💨 💗 Dimensional Analysis of Viscosity
 
-Step 1: Identify the physical quantities involved*
-{query.split()[-1].capitalize()} is a measure of a physical property. Let's break down the fundamental quantities involved.
+**Step 1: Define the Physical Quantity**
+Viscosity is a measure of a fluid's resistance to flow, defined as the ratio of shear stress to shear rate.
 
-Step 2: Express the physical quantities in terms of their fundamental dimensions*
-- Force: [M L T⁻²]
-- Area: [L²]
-- Velocity: [L T⁻¹]
-- Time: [T]
+**Formula Representation:**
+$$ \\text{{Viscosity}} = \\frac{{\\text{{Shear Stress}}}}{{\\text{{Shear Rate}}}} = \\frac{{\\text{{Pa}}}}{{\\text{{s}}^{{-1}}}} $$
 
-Step 3: Dimensional Analysis Calculation*
-To prove the dimensional consistency, we'll analyze the dimensions of each component.
+**Step 2: Dimensional Analysis of Components**
+- Shear Stress: Force per unit area
+  * Dimensions: $[M L T^{{-2}}] / [L^2] = [M L^{{-1}} T^{{-2}}]$
+- Shear Rate: Velocity gradient
+  * Dimensions: $[L T^{{-1}}] / [L] = [T^{{-1}}]$
 
-**Dimensional Equation:**
-$$ \\frac{{[Force]}}{{[Area]}} \\cdot [Time] $$
+**Step 3: Dimensional Consistency**
+Combining the dimensions:
+$$ \\left[\\frac{{\\text{{Shear Stress}}}}{{\\text{{Shear Rate}}}}\\right] = \\frac{{[M L^{{-1}} T^{{-2}}]}}{{[T^{{-1}}]}} = [M L^{{-1}} T^{{-1}}} $$
 
-**Dimensional Breakdown:**
-- Force/Area: [M L T⁻²] / [L²] = [M L⁻¹ T⁻²]
-- Multiplying by Time: [M L⁻¹ T⁻²] · [T] = [M L⁻¹ T⁻¹]
-
-Step 4: Verify Dimensional Consistency*
-The final dimensional representation confirms the consistency of the physical quantity.
-
-**Conclusion:**
-The dimensional analysis shows that the quantity has consistent fundamental dimensions, validating its physical significance.
+**Step 4: Physical Interpretation**
+The dimensional analysis confirms that viscosity has consistent units:
+- Mass per length per time
+- Typically expressed in Pascal-seconds (Pa·s) or Poise (P)
 
 **Key Insights:**
-- Dimensional analysis helps verify the physical meaning of quantities
-- It ensures the mathematical relationships make physical sense
-- Provides a powerful tool for understanding complex physical phenomena
+- Viscosity quantifies a fluid's internal resistance to flow
+- Dimensional analysis validates the physical meaning of the quantity
+- Helps understand the fundamental nature of fluid properties
 """
         return response
 

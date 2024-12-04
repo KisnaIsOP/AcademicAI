@@ -44,10 +44,15 @@
 /* Dark Mode */
 :root[data-theme="dark"] {
     /* Comprehensive Dark Mode Palette */
-    --primary-color: #3498db;  /* Bright blue for primary elements */
-    --secondary-color: #2980b9;  /* Slightly darker blue */
-    --background-color: #121212;  /* Very dark background */
-    --text-color: #e0e0e0;  /* Light gray text */
+    --primary-color: #4a90e2;  /* Slightly brighter blue for better visibility */
+    --secondary-color: #3a7ca5;  /* Complementary darker blue */
+    --background-color: #121212;  /* Deep dark background */
+    --text-color: #e0e0e0;  /* Light gray text for improved readability */
+    --input-background: #1e1e1e;  /* Slightly lighter than main background */
+    --input-border: #333333;  /* Subtle border for input */
+    --placeholder-color: #888888;  /* Lighter placeholder text */
+    --link-color: #4a90e2;  /* Bright blue for links */
+    --link-hover-color: #6ab0ff;  /* Slightly lighter blue on hover */
     --message-bg-therapist: #1e1e1e;  /* Dark message background */
     --message-bg-user: #2c3e50;  /* Dark slate blue for user messages */
     --border-color: #333;  /* Dark border */
@@ -229,9 +234,14 @@ body {
 }
 
 [data-theme="dark"] textarea {
-    background: var(--message-bg-therapist);
+    background: var(--input-background);
     color: var(--text-color);
-    border-color: var(--border-color);
+    border-color: var(--input-border);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+[data-theme="dark"] textarea::placeholder {
+    color: var(--placeholder-color);
 }
 
 [data-theme="dark"] .therapist .message-content strong {
@@ -255,18 +265,44 @@ body {
     overflow-x: auto;
 }
 
-.therapist .message-content {
-    width: 100%;
-    box-sizing: border-box;
-    word-wrap: break-word;
-    white-space: pre-line;
+.therapist .message-content .math-block .equation {
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    color: #2c3e50;
 }
 
-.timestamp {
-    font-size: 0.85em;
-    color: #64748B;
-    margin-top: 6px;
-    font-weight: 400;
+.step {
+    background-color: rgba(52, 152, 219, 0.05);
+    border-left: 4px solid var(--primary-color);
+    margin: 1em 0;
+    padding: 0.5em 1em;
+}
+
+.step-title {
+    color: var(--primary-color);
+    margin-bottom: 0.5em;
+    font-size: 1.1em;
+}
+
+.step-content {
+    line-height: 1.6;
+}
+
+.therapist .message-content .step {
+    margin: 1em 0;
+    padding: 0.5em 1em;
+    background-color: rgba(52, 152, 219, 0.05);
+    border-left: 4px solid var(--primary-color);
+}
+
+.therapist .message-content .step-title {
+    color: var(--primary-color);
+    margin-bottom: 0.5em;
+    font-size: 1.1em;
+}
+
+.therapist .message-content .step-content {
+    line-height: 1.6;
 }
 
 /* Input Container */

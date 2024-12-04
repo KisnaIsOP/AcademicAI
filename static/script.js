@@ -78,18 +78,20 @@ document.addEventListener('DOMContentLoaded', function() {
             .replace(/__(.*?)__/g, '<u>$1</u>')  // Underline
             .replace(/`(.*?)`/g, '<code>$1</code>');  // Inline code
 
-        // Detect and process mathematical equations
+        // Detect and process mathematical equations with improved rendering
         processedText = processedText.replace(/\$\$(.*?)\$\$/g, (match, equation) => {
-            return `<div class="math-block">${equation}</div>`;
+            return `<div class="math-block">
+                <span class="equation">${equation}</span>
+            </div>`;
         }).replace(/\$(.*?)\$/g, (match, equation) => {
             return `<span class="math-inline">${equation}</span>`;
         });
 
-        // Improved step and section formatting
-        processedText = processedText.replace(/Step (\d+):(.+?)(?=Step \d+|\*\*Conclusion\*\*|$)/gs, (match, stepNumber, content) => {
+        // Improved step and section formatting with enhanced visibility
+        processedText = processedText.replace(/\*\*Step (\d+):(.+?)(?=\*\*Step \d+|\*\*Key Insights\*\*|$)/gs, (match, stepNumber, content) => {
             return `
                 <div class="step">
-                    <h3>Step ${stepNumber}:</h3>
+                    <h3 class="step-title">Step ${stepNumber}:</h3>
                     <div class="step-content">${content.trim()}</div>
                 </div>
             `;
