@@ -201,7 +201,7 @@ def format_mathematical_notation(text):
     
     Transformation rules:
     1. Convert common physical quantities to symbolic notation
-    2. Format fractions and complex expressions in stacked/LaTeX format
+    2. Format fractions and complex expressions simply
     3. Ensure clear, readable mathematical representation
     """
     # Mapping of common physical quantities to symbolic notation
@@ -217,28 +217,13 @@ def format_mathematical_notation(text):
         'length': 'l'
     }
     
-    # Equation formatting patterns
-    equation_patterns = [
-        # Viscosity equation
-        (r'viscosity\s*=\s*(\w+)\s*/\s*(\w+)', 
-         r'$$ η = \frac{{{0}}}{{{1}}} $$'),
-        
-        # General fraction representation
-        (r'(\w+)\s*/\s*(\w+)', 
-         r'$$ \frac{{{0}}}{{{1}}} $$')
-    ]
-    
     # Replace physical quantity names with symbolic notation
     for word, symbol in notation_map.items():
         text = re.sub(r'\b{}\b'.format(word), symbol, text, flags=re.IGNORECASE)
     
-    # Apply equation formatting
-    for pattern, replacement in equation_patterns:
-        def replace_equation(match):
-            # Use .format() with explicit indices to avoid f-string issues
-            return replacement.format(match.group(1), match.group(2))
-        
-        text = re.sub(pattern, replace_equation, text, flags=re.IGNORECASE)
+    # Simplify exponent and fraction representations
+    text = re.sub(r'\^{{(\d+)}}', r'^{\1}', text)
+    text = re.sub(r'\[\s*(\w+)\s*([+-])\s*(\d+)\s*\]', r'[\1^{\2\3}]', text)
     
     return text
 
@@ -294,23 +279,23 @@ def generate_response_with_context(query):
     
     # Special handling for dimensional analysis and scientific queries
     if any(keyword in query.lower() for keyword in ['dimension', 'dimensional analysis', 'viscosity', 'prove', 'derivation']):
-        response = f"""😮‍💨 💗 Dimensional Analysis of Viscosity
+        response = """😮‍💨 💗 Dimensional Analysis of Viscosity
 
 **Step 1: Define the Physical Quantity**
 Viscosity (η) is a measure of a fluid's resistance to flow, defined as the ratio of shear stress to shear rate.
 
 **Symbolic Representation:**
-$$ η = \frac{τ}{γ̇} $$
+η = τ / γ̇
 
 **Step 2: Dimensional Analysis of Components**
 - Shear Stress (τ): Force per unit area
-  * Dimensions: $[M L T^{{-2}}] / [L^2] = [M L^{{-1}} T^{{-2}}]$
+  * Dimensions: [M L T^-2] / [L^2] = [M L^-1 T^-2]
 - Shear Rate (γ̇): Velocity gradient
-  * Dimensions: $[L T^{{-1}}] / [L] = [T^{{-1}}]$
+  * Dimensions: [L T^-1] / [L] = [T^-1]
 
 **Step 3: Dimensional Consistency**
 Combining the dimensions:
-$$ \left[\frac{τ}{γ̇}\right] = \frac{[M L^{{-1}} T^{{-2}}]}{[T^{{-1}}]} = [M L^{{-1}} T^{{-1}}} $$
+[τ / γ̇] = [M L^-1 T^-2] / [T^-1] = [M L^-1 T^-1]
 
 **Step 4: Physical Interpretation**
 The dimensional analysis confirms that viscosity has consistent units:
@@ -324,8 +309,7 @@ The dimensional analysis confirms that viscosity has consistent units:
         return format_mathematical_notation(response)
 
     # Default response generation logic
-    context_prompt = f"""\
-Context:
+    context_prompt = f"""Context:
 - Current Query: {query}
 - Conversation History: {len(conversation_context.history)} previous interactions
 
