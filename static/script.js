@@ -70,47 +70,59 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     // Improved Symbol and Emoji Support
-    function sanitizeAndRenderMessage(message) {
-        // Prevent multiple boxes by unified processing
-        function processLine(line) {
-            // Handle step indicators
-            line = line.replace(/^(Step\s*\d+:)/, '<strong>$1</strong>');
-            
-            // Handle headers
-            line = line.replace(/^(#{1,4})\s+(.*)/, (match, hashes, text) => {
-                const level = hashes.length;
-                return `<h${level}>${text}</h${level}>`;
-            });
-            
-            // Handle inline formatting
-            line = line.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-            line = line.replace(/\*([^*]+)\*/g, '<em>$1</em>');
-            line = line.replace(/`([^`]+)`/g, '<code>$1</code>');
-            
-            return line;
+    function processMarkdownAndMath(text) {
+        // Enhanced markdown processing
+        let processedText = text
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')  // Bold
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')  // Italic
+            .replace(/__(.*?)__/g, '<u>$1</u>')  // Underline
+            .replace(/`(.*?)`/g, '<code>$1</code>');  // Inline code
+
+        // Detect and process mathematical equations
+        processedText = processedText.replace(/\$\$(.*?)\$\$/g, (match, equation) => {
+            return `<div class="math-block">${equation}</div>`;
+        }).replace(/\$(.*?)\$/g, (match, equation) => {
+            return `<span class="math-inline">${equation}</span>`;
+        });
+
+        // Improved step and section formatting
+        processedText = processedText.replace(/Step (\d+):(.+?)(?=Step \d+|\*\*Conclusion\*\*|$)/gs, (match, stepNumber, content) => {
+            return `
+                <div class="step">
+                    <h3>Step ${stepNumber}:</h3>
+                    <div class="step-content">${content.trim()}</div>
+                </div>
+            `;
+        });
+
+        return processedText;
+    }
+
+    function renderMessage(message, sender, timestamp = null) {
+        const chatContainer = document.getElementById('chat-container');
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message', sender);
+
+        // Improved markdown and math rendering
+        const processedMessage = processMarkdownAndMath(message);
+
+        // Full-width, responsive message content
+        messageElement.innerHTML = `
+            <div class="message-content">
+                ${processedMessage}
+                ${timestamp ? `<div class="timestamp">${timestamp}</div>` : ''}
+            </div>
+        `;
+
+        chatContainer.appendChild(messageElement);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    // Ensure MathJax rendering for equations
+    function renderMathEquations() {
+        if (window.MathJax) {
+            MathJax.typeset();
         }
-
-        // Process the entire message
-        let processedLines = message.split('\n').map(processLine);
-        
-        // Join lines, preserving structure
-        let formattedMessage = processedLines.join('\n')
-            .replace(/\n\n+/g, '</p><p>')  // Convert multiple newlines to paragraphs
-            .replace(/\n/g, '<br>');  // Convert single newlines to line breaks
-
-        // Wrap in paragraph if not already wrapped
-        if (!formattedMessage.startsWith('<p>')) {
-            formattedMessage = `<p>${formattedMessage}</p>`;
-        }
-
-        // Trigger MathJax rendering if available
-        setTimeout(() => {
-            if (window.MathJax) {
-                window.MathJax.typeset();
-            }
-        }, 100);
-
-        return formattedMessage;
     }
 
     // Enhanced context detection for better emoji placement
@@ -207,7 +219,7 @@ document.addEventListener('DOMContentLoaded', function() {
         messageContent.className = 'message-content';
         
         const text = document.createElement('p');
-        text.innerHTML = sanitizeAndRenderMessage(content);
+        text.innerHTML = processMarkdownAndMath(content);
         
         const timestamp = document.createElement('span');
         timestamp.className = 'timestamp';

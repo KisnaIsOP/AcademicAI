@@ -43,15 +43,19 @@
 
 /* Dark Mode */
 :root[data-theme="dark"] {
-    --primary-color: #4CAF50;  /* Bright green for better visibility */
-    --secondary-color: #81C784;  /* Lighter green */
-    --text-color: #E0E0E0;  /* Light gray for better readability */
+    /* Comprehensive Dark Mode Palette */
+    --primary-color: #3498db;  /* Bright blue for primary elements */
+    --secondary-color: #2980b9;  /* Slightly darker blue */
     --background-color: #121212;  /* Very dark background */
-    --message-bg-therapist: #1E1E1E;  /* Slightly lighter than background */
+    --text-color: #e0e0e0;  /* Light gray text */
+    --message-bg-therapist: #1e1e1e;  /* Dark message background */
+    --message-bg-user: #2c3e50;  /* Dark slate blue for user messages */
     --border-color: #333;  /* Dark border */
-    --code-background: #2C2C2C;  /* Dark code background */
-    --code-text-color: #E0E0E0;  /* Light text for code */
-    --user-message-bg: #2E7D32;  /* Dark green for user messages */
+    --code-background: #2c3e50;  /* Dark code background */
+    --code-text-color: #ecf0f1;  /* Light code text */
+    --shadow-color: rgba(52, 152, 219, 0.2);  /* Soft blue shadow */
+    --gradient-start: #1a1a1a;  /* Dark gradient start */
+    --gradient-end: #2c3e50;  /* Dark gradient end */
 }
 
 /* Animations */
@@ -200,6 +204,62 @@ body {
     background-color: #1E1E1E;
     border-color: #333;
     color: #E0E0E0;
+}
+
+[data-theme="dark"] body {
+    background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+    background-attachment: fixed;
+    color: var(--text-color);
+}
+
+[data-theme="dark"] .chat-container {
+    background: var(--message-bg-therapist);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .therapist .message-content {
+    background: var(--message-bg-therapist);
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .user .message-content {
+    background: var(--message-bg-user);
+    color: var(--text-color);
+}
+
+[data-theme="dark"] textarea {
+    background: var(--message-bg-therapist);
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+
+[data-theme="dark"] .therapist .message-content strong {
+    color: var(--primary-color);
+}
+
+[data-theme="dark"] .therapist .message-content em {
+    color: var(--secondary-color);
+}
+
+.therapist .message-content .math-block,
+.therapist .message-content .math-inline {
+    display: block;
+    text-align: center;
+    margin: 1em 0;
+    font-size: 1.2em;
+    color: var(--primary-color);
+    background-color: rgba(52, 152, 219, 0.1);
+    padding: 0.5em;
+    border-radius: 8px;
+    overflow-x: auto;
+}
+
+.therapist .message-content {
+    width: 100%;
+    box-sizing: border-box;
+    word-wrap: break-word;
+    white-space: pre-line;
 }
 
 .timestamp {

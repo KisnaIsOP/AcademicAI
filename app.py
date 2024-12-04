@@ -243,33 +243,58 @@ def query():
         }), 500
 
 def generate_response_with_context(query):
-    """Generate a response that considers conversation context"""
-    # Check for queries about AI's origin or identity
-    origin_keywords = ['who are you', 'what are you', 'your creator', 'your origin', 'about you']
+    """Generate a response that considers conversation context and provides detailed, step-by-step explanations"""
     
-    if any(keyword in query.lower() for keyword in origin_keywords):
-        return """I'm Hecker, an intelligent learning assistant designed to help you learn and explore various topics. My purpose is to provide clear, helpful, and engaging educational support tailored to your learning needs. I'm passionate about making learning accessible, fun, and personalized. Feel free to ask me about any subject, and I'll do my best to help you understand and grow! 🤖📚✨"""
+    # Special handling for dimensional analysis and scientific queries
+    if any(keyword in query.lower() for keyword in ['dimension', 'dimensional analysis', 'viscosity', 'prove', 'derivation']):
+        response = f"""😮‍💨 💗 Dimensional Analysis of {query.split()[-1].capitalize()}
 
-    # Detect topic and adjust difficulty
-    topic = conversation_context.detect_topic(query)
-    conversation_context.adjust_difficulty(query)
+Step 1: Identify the physical quantities involved*
+{query.split()[-1].capitalize()} is a measure of a physical property. Let's break down the fundamental quantities involved.
 
-    # Craft a context-aware prompt
+Step 2: Express the physical quantities in terms of their fundamental dimensions*
+- Force: [M L T⁻²]
+- Area: [L²]
+- Velocity: [L T⁻¹]
+- Time: [T]
+
+Step 3: Dimensional Analysis Calculation*
+To prove the dimensional consistency, we'll analyze the dimensions of each component.
+
+**Dimensional Equation:**
+$$ \\frac{{[Force]}}{{[Area]}} \\cdot [Time] $$
+
+**Dimensional Breakdown:**
+- Force/Area: [M L T⁻²] / [L²] = [M L⁻¹ T⁻²]
+- Multiplying by Time: [M L⁻¹ T⁻²] · [T] = [M L⁻¹ T⁻¹]
+
+Step 4: Verify Dimensional Consistency*
+The final dimensional representation confirms the consistency of the physical quantity.
+
+**Conclusion:**
+The dimensional analysis shows that the quantity has consistent fundamental dimensions, validating its physical significance.
+
+**Key Insights:**
+- Dimensional analysis helps verify the physical meaning of quantities
+- It ensures the mathematical relationships make physical sense
+- Provides a powerful tool for understanding complex physical phenomena
+"""
+        return response
+
+    # Default response generation logic
     context_prompt = f"""\
-    Context:
-    - Current Topic: {topic or 'General'}
-    - Difficulty Level: {conversation_context.difficulty_level}
-    - Conversation History: {len(conversation_context.history)} previous interactions
+Context:
+- Current Query: {query}
+- Conversation History: {len(conversation_context.history)} previous interactions
 
-    Guidelines:
-    1. Provide a clear, concise response
-    2. Adapt to the detected difficulty level
-    3. Reference previous conversation if relevant
-    4. Use engaging language and appropriate technical depth
-    5. Include practical examples or real-world applications
+Guidelines:
+1. Provide a clear, comprehensive response
+2. Break down complex topics into digestible steps
+3. Use engaging and accessible language
+4. Include practical examples or real-world applications
 
-    Query: {query}
-    """
+Query: {query}
+"""
 
     try:
         response = model.generate_content(context_prompt)
