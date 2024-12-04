@@ -201,8 +201,8 @@ def format_mathematical_notation(text):
     
     Transformation rules:
     1. Convert common physical quantities to symbolic notation
-    2. Format fractions and complex expressions simply
-    3. Ensure clear, readable mathematical representation
+    2. Format formulas with proper alignment and spacing
+    3. Use standard mathematical representation
     """
     # Mapping of common physical quantities to symbolic notation
     notation_map = {
@@ -238,6 +238,21 @@ def format_mathematical_notation(text):
     
     # Replace r^2 style notation with superscript
     text = re.sub(r'(\w+)\^{?(-?\d+)}?', replace_power, text)
+    
+    # Improve formula formatting
+    def format_formula(match):
+        # Standardize formula representation
+        formula = match.group(1)
+        
+        # Add spacing around operators
+        formula = re.sub(r'([+\-*/=])', r' \1 ', formula)
+        
+        # Center-align the formula
+        return f"\n\n{'':^40}\n{'':^40}{formula}\n{'':^40}\n"
+    
+    # Detect and format formulas enclosed in square brackets or between specific markers
+    text = re.sub(r'\[([^]]+)\]', format_formula, text)
+    text = re.sub(r'FORMULA:(.*?)(?=\n|$)', format_formula, text, flags=re.DOTALL)
     
     return text
 
