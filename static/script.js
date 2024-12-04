@@ -82,17 +82,42 @@ document.addEventListener('DOMContentLoaded', function() {
         // Process steps and formatting
         const lines = message.split('\n');
         let formattedLines = lines.map(line => {
-            // Format step numbers
-            line = line.replace(/^(\d+\.|Step \d+:)(.*)/, '<strong>$1</strong>$2');
+            // Format step numbers and bullet points
+            line = line.replace(/^(\d+\.|Step \d+:)(.*)/, '<div class="step"><strong>$1</strong>$2</div>');
+            line = line.replace(/^[-*•](.*)/, '<div class="step">$1</div>');
             
-            // Format equations and math symbols
-            line = line.replace(/\\[a-zA-Z]+/g, match => `<span class="math-symbol">${match}</span>`);
+            // Format headers
+            line = line.replace(/^(#{1,4})\s+(.*)/, (match, hashes, text) => {
+                const level = hashes.length;
+                return `<h${level}>${text}</h${level}>`;
+            });
+            
+            // Format code blocks
+            if (line.startsWith('```')) {
+                return '<pre><code>';
+            } else if (line.endsWith('```')) {
+                return '</code></pre>';
+            }
+            
+            // Format inline code
+            line = line.replace(/`([^`]+)`/g, '<code>$1</code>');
+            
+            // Format bold and italic
+            line = line.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+            line = line.replace(/\*([^*]+)\*/g, '<em>$1</em>');
             
             return line;
         });
 
-        // Join lines with proper spacing
-        message = formattedLines.join('\n');
+        // Join lines with proper spacing and handle paragraphs
+        message = formattedLines.join('\n')
+            .replace(/\n\n+/g, '</p><p>') // Convert multiple newlines to paragraphs
+            .replace(/\n/g, '<br>'); // Convert single newlines to line breaks
+
+        // Wrap in paragraph tags if not already wrapped
+        if (!message.startsWith('<p>')) {
+            message = '<p>' + message + '</p>';
+        }
 
         // Trigger MathJax rendering after content is added
         setTimeout(() => {
@@ -101,34 +126,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }, 100);
 
-        // Escape HTML to prevent XSS
-        const sanitizedMessage = message
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#039;');
-        
-        // Advanced text formatting
-        const formattedMessage = sanitizedMessage
-            // Bold: **text** or __text__
-            .replace(/(\*\*|__)(.*?)\1/g, '<strong>$2</strong>')
-            // Italic: *text* or _text_
-            .replace(/(\*|_)(.*?)\1/g, '<em>$2</em>')
-            // Strikethrough: ~~text~~
-            .replace(/~~(.*?)~~/g, '<del>$1</del>')
-            // Code: `code`
-            .replace(/`(.*?)`/g, '<code>$1</code>')
-            // Underline: ++text++
-            .replace(/\+\+(.*?)\+\+/g, '<u>$1</u>');
-        
-        // Convert Unicode emojis and special characters
-        const renderedMessage = formattedMessage.replace(
-            /[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, 
-            (match) => `<span class="emoji">${match}</span>`
-        );
-        
-        return renderedMessage;
+        return message;
     }
 
     // Enhanced context detection for better emoji placement

@@ -84,7 +84,7 @@ body {
 }
 
 .container {
-    max-width: 900px;
+    max-width: 95%;
     margin: 0 auto;
     padding: 20px;
 }
@@ -98,13 +98,14 @@ body {
     flex-direction: column;
     gap: 20px;
     scroll-behavior: smooth;
+    height: calc(100% - 100px);
 }
 
 /* Message Styling */
 .message {
     display: flex;
     flex-direction: column;
-    max-width: 70%;
+    max-width: 85%;
     animation: fadeIn 0.5s ease-out;
 }
 
@@ -119,6 +120,9 @@ body {
     line-height: 1.8;
     transition: all var(--transition-speed) ease;
     font-size: 1.05em;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
 }
 
 .user .message-content {
@@ -133,6 +137,69 @@ body {
     border: 1px solid var(--border-color);
     border-bottom-left-radius: 6px;
     box-shadow: 0 4px 20px var(--shadow-color);
+    white-space: pre-line;
+}
+
+.therapist .message-content p {
+    margin: 0.8em 0;
+}
+
+.therapist .message-content ul,
+.therapist .message-content ol {
+    margin: 0.8em 0;
+    padding-left: 1.5em;
+}
+
+.therapist .message-content li {
+    margin: 0.5em 0;
+}
+
+.therapist .message-content h1,
+.therapist .message-content h2,
+.therapist .message-content h3,
+.therapist .message-content h4 {
+    margin: 1em 0 0.5em 0;
+    color: var(--text-color);
+    font-weight: 600;
+}
+
+.therapist .message-content .step {
+    margin: 1em 0;
+    padding-left: 1.5em;
+    position: relative;
+}
+
+.therapist .message-content .step:before {
+    content: "•";
+    position: absolute;
+    left: 0.5em;
+    color: var(--primary-color);
+}
+
+.therapist .message-content pre {
+    background: var(--code-background);
+    padding: 1em;
+    border-radius: 8px;
+    margin: 0.8em 0;
+    overflow-x: auto;
+}
+
+.therapist .message-content code {
+    font-family: 'Consolas', 'Monaco', monospace;
+    background: var(--code-background);
+    padding: 0.2em 0.4em;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+
+.therapist .message-content em {
+    color: var(--primary-text-highlight);
+    font-style: italic;
+}
+
+.therapist .message-content strong {
+    color: var(--secondary-text-highlight);
+    font-weight: 600;
 }
 
 .timestamp {
@@ -291,17 +358,14 @@ body.dark-mode .main-logo {
 
 /* Chat Container */
 .chat-container {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: 24px;
-    box-shadow: 0 8px 32px var(--shadow-color);
-    overflow: hidden;
+    height: calc(90vh - 100px);
     display: flex;
     flex-direction: column;
-    height: 80vh;
-    transition: all var(--transition-speed) ease;
-    animation: breathe 5s infinite;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px var(--shadow-color);
+    margin-top: 20px;
+    overflow: hidden;
 }
 
 /* Step-by-Step Content Styles */
