@@ -106,7 +106,7 @@ body {
 }
 
 body.dark-mode {
-    background-color: #121212;
+    background-color: #000000;
     color: #ffffff;
 }
 
@@ -115,7 +115,7 @@ body.dark-mode .content {
 }
 
 body.dark-mode {
-    background-color: #121212;
+    background-color: #000000;
     color: #ffffff;
 }
 
@@ -124,7 +124,7 @@ body.dark-mode {
 }
 
 body.dark-mode .message-content {
-    background-color: #1e1e1e;
+    background-color: #0d0d0d;
     color: #ffffff;
 }
 
@@ -133,7 +133,7 @@ body.dark-mode .message-content p {
 }
 
 body.dark-mode .timestamp {
-    color: #bbbbbb;
+    color: #4a9eff;
 }
 
 .container {
@@ -625,12 +625,29 @@ button {
     }
 }
 
+/* Mobile adjustments */
+@media (max-width: 600px) {
+    .message-content {
+        padding: 10px;
+        margin: 5px 0;
+    }
+
+    .message-content p {
+        font-size: 0.9em;
+    }
+
+    .math {
+        font-size: 1em;
+    }
+}
+
 /* Theme Toggle */
 .theme-toggle {
     position: fixed;
     top: 20px;
     right: 20px;
     z-index: 1000;
+    color: #4a9eff;
 }
 
 .theme-toggle button {
@@ -739,7 +756,7 @@ button {
 
 /* Dark mode specific styles */
 body.dark-mode .message-content {
-    background-color: #1e1e1e;
+    background-color: #0d0d0d;
     color: #ffffff;
 }
 
