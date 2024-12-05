@@ -105,6 +105,11 @@ body {
     transition: all var(--transition-speed) ease;
 }
 
+body.dark-mode {
+    background-color: #121212;
+    color: #e0e0e0;
+}
+
 .container {
     max-width: 95%;
     margin: 0 auto;
@@ -173,13 +178,13 @@ body {
     padding: 10px 0;
     display: block;
     text-align: center;
+    margin: 20px 0;
 }
 
 /* Remove blue lines */
 .message-content p {
     margin: 0;
     padding: 8px 0;
-    border: none;
 }
 
 /* Mathematical expressions */
