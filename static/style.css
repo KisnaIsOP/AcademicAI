@@ -107,7 +107,11 @@ body {
 
 body.dark-mode {
     background-color: #121212;
-    color: #e0e0e0;
+    color: #ffffff;
+}
+
+body.dark-mode .content {
+    background-color: #1e1e1e;
 }
 
 .container {
@@ -447,6 +451,47 @@ button {
     color: var(--text-color);
     margin: 8px 0;
     line-height: 1.6;
+}
+
+.explanation {
+    padding: 20px;
+    margin: 15px 0;
+    border-radius: 8px;
+    background-color: #1e1e1e;
+}
+
+.explanation h2 {
+    color: #fff;
+    margin-bottom: 15px;
+    font-size: 1.5em;
+}
+
+.explanation ul {
+    list-style-type: none;
+    padding-left: 20px;
+}
+
+.explanation li {
+    margin: 10px 0;
+    line-height: 1.6;
+}
+
+.math-equation {
+    display: block;
+    text-align: center;
+    margin: 20px 0;
+    font-size: 1.2em;
+    color: #e0e0e0;
+}
+
+.term {
+    font-style: italic;
+    color: #4a9eff;
+}
+
+.math-symbol {
+    font-family: 'Times New Roman', serif;
+    margin: 0 2px;
 }
 
 /* Code block for equations */

@@ -36,7 +36,7 @@
     </div>
     <div class="container">
         <header>
-            <div class="logo-container">
+            <div class="logo-container" style="display: none;">
                 <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Hecker AI Logo" class="main-logo">
             </div>
             <h1>Hecker <i class="fas fa-heart"></i></h1>
@@ -44,11 +44,25 @@
         </header>
 
         <div class="chat-container">
-            <div class="messages" id="messages">
-                <div class="message therapist">
-                    <div class="message-content">
-                        <p>{{ initial_question if initial_question else "Welcome back! How are you feeling today?" }}</p>
-                        <span class="timestamp">{{ now }}</span>
+            <div class="messages" id="message-container">
+                <div class="message ai-message">
+                    <div class="explanation">
+                        <h2>Explanation:</h2>
+                        <ul>
+                            <li>Define terms like <span class="term">pressure P</span>, <span class="term">velocity v</span>, <span class="term">density ρ</span>, and <span class="term">height z</span> first.</li>
+                            <li>Introduce the work-energy principle and show it step by step with formulas:</li>
+                        </ul>
+                        <div class="math-equation">
+                            \[W_{\text{pressure}} = P_1A\Delta s - P_2A\Delta s\]
+                        </div>
+                        <p>Clarify the terms in this formula, then proceed.</p>
+                        <p>Derive the final equation:</p>
+                        <div class="math-equation">
+                            \[P + \frac{1}{2}\rho v^2 + \rho gz = \text{constant}\]
+                        </div>
+                        <ul>
+                            <li>End with applications and examples.</li>
+                        </ul>
                     </div>
                 </div>
             </div>
