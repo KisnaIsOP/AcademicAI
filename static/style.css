@@ -114,6 +114,28 @@ body.dark-mode .content {
     background-color: #1e1e1e;
 }
 
+body.dark-mode {
+    background-color: #121212;
+    color: #ffffff;
+}
+
+.message-content {
+    background-color: transparent;
+}
+
+body.dark-mode .message-content {
+    background-color: #1e1e1e;
+    color: #ffffff;
+}
+
+body.dark-mode .message-content p {
+    color: #ffffff;
+}
+
+body.dark-mode .timestamp {
+    color: #bbbbbb;
+}
+
 .container {
     max-width: 95%;
     margin: 0 auto;
