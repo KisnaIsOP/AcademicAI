@@ -112,6 +112,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function formatResponseText(text) {
+        // Log the raw input for debugging
+        console.log('Raw input:', text);
+        
         // Format sections
         text = text.replace(/\*\*([^*]+)\*\*/g, '<div class="section-title">$1</div>');
         
@@ -156,6 +159,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // Replace newlines with breaks
         text = text.replace(/\n/g, '<br>');
         
+        // Log the formatted output for debugging
+        console.log('Formatted output:', text);
+        
         return text;
     }
 
@@ -191,7 +197,10 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Render math
         if (window.MathJax) {
-            MathJax.typesetPromise([contentDiv]);
+            MathJax.typesetPromise([contentDiv]).catch(function (err) {
+                console.error('MathJax rendering error:', err);
+                contentDiv.innerHTML += `<div class='math-error'>Error rendering math: ${err.message}</div>`;
+            });
         }
     }
 
