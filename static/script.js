@@ -111,6 +111,90 @@ document.addEventListener('DOMContentLoaded', function() {
         return text;
     }
 
+    function formatResponseText(text) {
+        // Format sections
+        text = text.replace(/\*\*([^*]+)\*\*/g, '<div class="section-title">$1</div>');
+        
+        // Format key points
+        text = text.replace(/\[Key Point\](.*?)(?=\[|$)/g, '<div class="key-point">$1</div>');
+        
+        // Format equations with labels
+        text = text.replace(/\[Equation\](.*?)\[(.*?)\]/g, `
+            <div class="equation-container">
+                <div class="equation-label">$1</div>
+                <div class="equation">\\[$2\\]</div>
+            </div>
+        `);
+        
+        // Format definitions
+        text = text.replace(/\[Definition\](.*?):(.*?)(?=\[|$)/g, `
+            <div class="definition">
+                <span class="definition-term">$1:</span>
+                $2
+            </div>
+        `);
+        
+        // Format examples
+        text = text.replace(/\[Example\](.*?)(?=\[|$)/g, `
+            <div class="example">
+                <div class="example-title">Example:</div>
+                $1
+            </div>
+        `);
+        
+        // Format steps
+        text = text.replace(/\[Step (\d+)\](.*?)(?=\[Step|$)/g, `
+            <div class="step">
+                <span class="step-number">Step $1:</span>
+                $2
+            </div>
+        `);
+        
+        // Format mathematical terms
+        text = text.replace(/\b([A-Za-z])\b(?=\s*[=,]|\s+is|\s+and)/g, '<span class="term">$1</span>');
+        
+        // Replace newlines with breaks
+        text = text.replace(/\n/g, '<br>');
+        
+        return text;
+    }
+
+    function appendMessage(message, isUser = false) {
+        const messagesDiv = document.getElementById('messages');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${isUser ? 'user' : 'therapist'}`;
+        
+        if (!isUser) {
+            const botImg = document.createElement('img');
+            botImg.src = '/static/images/hecker_logo.png';
+            botImg.alt = 'Bot Profile';
+            botImg.className = 'bot-profile';
+            messageDiv.appendChild(botImg);
+        }
+        
+        const contentDiv = document.createElement('div');
+        contentDiv.className = 'message-content';
+        
+        // Format message
+        const formattedMessage = formatResponseText(message);
+        contentDiv.innerHTML = formattedMessage;
+        
+        // Add timestamp
+        const timestamp = document.createElement('span');
+        timestamp.className = 'timestamp';
+        timestamp.textContent = new Date().toLocaleTimeString();
+        contentDiv.appendChild(timestamp);
+        
+        messageDiv.appendChild(contentDiv);
+        messagesDiv.appendChild(messageDiv);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        
+        // Render math
+        if (window.MathJax) {
+            MathJax.typesetPromise([contentDiv]);
+        }
+    }
+
     function renderMessage(message, sender, timestamp = null) {
         const chatContainer = document.getElementById('chat-container');
         const messageElement = document.createElement('div');
@@ -131,127 +215,6 @@ document.addEventListener('DOMContentLoaded', function() {
         chatContainer.scrollTop = chatContainer.scrollHeight;
     }
 
-    function appendMessage(message, isUser = false) {
-        const messagesDiv = document.getElementById('messages');
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `message ${isUser ? 'user' : 'therapist'}`;
-        
-        const contentDiv = document.createElement('div');
-        contentDiv.className = 'message-content';
-        
-        // Format message if it contains mathematical content
-        const formattedMessage = formatMathResponse(message);
-        contentDiv.innerHTML = `<p>${formattedMessage}</p>`;
-        
-        // Add timestamp
-        const timestamp = document.createElement('span');
-        timestamp.className = 'timestamp';
-        timestamp.textContent = new Date().toLocaleTimeString();
-        contentDiv.appendChild(timestamp);
-        
-        messageDiv.appendChild(contentDiv);
-        messagesDiv.appendChild(messageDiv);
-        messagesDiv.scrollTop = messagesDiv.scrollHeight;
-        
-        // Trigger MathJax to render any new math content
-        if (window.MathJax) {
-            MathJax.typesetPromise([contentDiv]);
-        }
-    }
-
-    // Ensure MathJax rendering for equations
-    function renderMathEquations() {
-        if (window.MathJax) {
-            MathJax.typeset();
-        }
-    }
-
-    // Enhanced context detection for better emoji placement
-    function addEmojisToResponse(response) {
-        // Check if response is undefined, null, or not a string
-        if (!response || typeof response !== 'string') {
-            return response || ''; // Return empty string if response is invalid
-        }
-
-        const lowerResponse = response.toLowerCase();
-        let enhancedResponse = response;
-        
-        // Greeting detection
-        if (/^(hi|hello|hey|greetings|good (morning|afternoon|evening))/i.test(response)) {
-            enhancedResponse = getRandomEmoji('greeting') + ' ' + enhancedResponse;
-        }
-        
-        // Farewell detection
-        if (/(goodbye|bye|take care|see you|until next time)/i.test(lowerResponse)) {
-            enhancedResponse += ' ' + getRandomEmoji('farewell');
-        }
-        
-        // Emotional support detection
-        if (/(here for you|support you|understand|must be hard|difficult time)/i.test(lowerResponse)) {
-            enhancedResponse = getRandomEmoji('empathy') + ' ' + enhancedResponse;
-        }
-        
-        // Encouragement detection
-        if (/(you can do|believe in|keep going|step forward|progress)/i.test(lowerResponse)) {
-            enhancedResponse += ' ' + getRandomEmoji('encouragement');
-        }
-        
-        // Anxiety/Stress detection
-        if (/(anxious|worried|stress|overwhelm|nervous)/i.test(lowerResponse)) {
-            enhancedResponse = getRandomEmoji('anxiety') + ' ' + enhancedResponse;
-        }
-        
-        // Depression/Sadness detection
-        if (/(sad|depress|down|lonely|hopeless)/i.test(lowerResponse)) {
-            enhancedResponse = getRandomEmoji('depression') + ' ' + enhancedResponse;
-        }
-        
-        // Hope/Positivity detection
-        if (/(hope|better days|future|positive|bright)/i.test(lowerResponse)) {
-            enhancedResponse += ' ' + getRandomEmoji('hope');
-        }
-        
-        // Mindfulness/Relaxation detection
-        if (/(breathe|relax|mindful|present|calm)/i.test(lowerResponse)) {
-            enhancedResponse = getRandomEmoji('mindfulness') + ' ' + enhancedResponse;
-        }
-        
-        // Gratitude detection
-        if (/(thank|grateful|appreciate|blessed)/i.test(lowerResponse)) {
-            enhancedResponse += ' ' + getRandomEmoji('gratitude');
-        }
-        
-        // Sleep/Rest detection
-        if (/(sleep|rest|tired|exhausted|night)/i.test(lowerResponse)) {
-            enhancedResponse = getRandomEmoji('sleep') + ' ' + enhancedResponse;
-        }
-        
-        // Confidence/Strength detection
-        if (/(strong|capable|achieve|proud|confidence)/i.test(lowerResponse)) {
-            enhancedResponse += ' ' + getRandomEmoji('confidence');
-        }
-        
-        return enhancedResponse;
-    }
-
-    // Get random emoji with weighted selection
-    function getRandomEmoji(category) {
-        const emojis = emojiMap[category];
-        if (!emojis) return '';
-        
-        // Add variation to prevent repetitive emojis
-        const lastUsedEmoji = sessionStorage.getItem(`last_${category}_emoji`);
-        let selectedEmoji;
-        
-        do {
-            selectedEmoji = emojis[Math.floor(Math.random() * emojis.length)];
-        } while (selectedEmoji === lastUsedEmoji && emojis.length > 1);
-        
-        sessionStorage.setItem(`last_${category}_emoji`, selectedEmoji);
-        return selectedEmoji;
-    }
-
-    // Message handling
     function addMessage(content, isUser) {
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${isUser ? 'user' : 'therapist'}`;
@@ -483,4 +446,16 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }, 1000);
     });
+
+    // Added a self-ping function to keep the server active by pinging every 5 minutes
+    function keepServerAlive() {
+        setInterval(() => {
+            fetch('/ping')
+                .then(response => console.log('Server pinged to stay alive'))
+                .catch(error => console.error('Error pinging server:', error));
+        }, 5 * 60 * 1000); // Ping every 5 minutes
+    }
+
+    // Call the function to start pinging
+    keepServerAlive();
 });

@@ -187,6 +187,22 @@ body.dark-mode .timestamp {
 
 .message.therapist {
     justify-content: flex-start;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.bot-profile {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-top: 5px;
+}
+
+.message.therapist .message-content {
+    margin-left: 0;
+    max-width: calc(100% - 50px);
 }
 
 .message.user {
@@ -827,4 +843,97 @@ body.dark-mode .messages {
 
 body.dark-mode .message.therapist .message-content {
     background-color: #0d0d0d !important;
+}
+
+/* Enhanced styling for different sections of AI responses */
+.section-title {
+    font-size: 1.2em;
+    color: #4a9eff;
+    margin: 15px 0 10px 0;
+    padding-bottom: 5px;
+    border-bottom: 2px solid #4a9eff;
+}
+
+.key-point {
+    padding: 10px;
+    margin: 10px 0;
+    border-left: 3px solid #4a9eff;
+    background-color: rgba(74, 158, 255, 0.1);
+}
+
+.equation-container {
+    margin: 20px 0;
+    padding: 15px;
+    border-radius: 8px;
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.equation-label {
+    color: #4a9eff;
+    font-style: italic;
+    margin-bottom: 10px;
+}
+
+.equation {
+    text-align: center;
+    font-size: 1.2em;
+}
+
+.definition {
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 8px;
+    background-color: rgba(74, 158, 255, 0.05);
+}
+
+.definition-term {
+    color: #4a9eff;
+    font-weight: bold;
+}
+
+.example {
+    margin: 15px 0;
+    padding: 15px;
+    border-radius: 8px;
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(74, 158, 255, 0.2);
+}
+
+.example-title {
+    color: #4a9eff;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.steps-container {
+    margin: 15px 0;
+}
+
+.step {
+    margin: 10px 0;
+    padding: 10px;
+    border-left: 2px solid #4a9eff;
+    background-color: rgba(74, 158, 255, 0.05);
+}
+
+.step-number {
+    color: #4a9eff;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+/* Dark mode specific overrides */
+body.dark-mode .equation-container {
+    background-color: #0d1117;
+}
+
+body.dark-mode .example {
+    background-color: #0d1117;
+    border-color: #1f2937;
+}
+
+body.dark-mode .key-point,
+body.dark-mode .definition,
+body.dark-mode .step {
+    background-color: #0d1117;
 }
