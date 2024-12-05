@@ -55,6 +55,9 @@
 
             <div class="input-container">
                 <textarea id="user-input" placeholder="Share what's on your mind..." rows="3"></textarea>
+                <button id="voice-input-btn" class="voice-btn">
+                    <i class="fas fa-microphone"></i>
+                </button>
                 <button id="send-button">
                     <i class="fas fa-paper-plane"></i>
                 </button>
@@ -116,6 +119,62 @@
     </div>
 
     <script src="{{ url_for('static', filename='script.js') }}"></script>
+    
+    <!-- Speech Recognition Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const voiceButton = document.getElementById('voice-input-btn');
+            const userInput = document.getElementById('user-input');
+            let isRecording = false;
+
+            // Check if browser supports speech recognition
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                voiceButton.style.display = 'none';
+                console.log('Speech recognition not supported');
+                return;
+            }
+
+            const recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = true;
+            recognition.lang = 'en-US';
+
+            voiceButton.addEventListener('click', () => {
+                if (!isRecording) {
+                    // Start recording
+                    recognition.start();
+                    isRecording = true;
+                    voiceButton.classList.add('recording');
+                    voiceButton.querySelector('i').classList.remove('fa-microphone');
+                    voiceButton.querySelector('i').classList.add('fa-stop');
+                } else {
+                    // Stop recording
+                    recognition.stop();
+                    isRecording = false;
+                    voiceButton.classList.remove('recording');
+                    voiceButton.querySelector('i').classList.remove('fa-stop');
+                    voiceButton.querySelector('i').classList.add('fa-microphone');
+                }
+            });
+
+            recognition.onresult = (event) => {
+                const transcript = Array.from(event.results)
+                    .map(result => result[0])
+                    .map(result => result.transcript)
+                    .join('');
+                
+                userInput.value = transcript;
+            };
+
+            recognition.onend = () => {
+                isRecording = false;
+                voiceButton.classList.remove('recording');
+                voiceButton.querySelector('i').classList.remove('fa-stop');
+                voiceButton.querySelector('i').classList.add('fa-microphone');
+            };
+        });
+    </script>
     
     <!-- Cute Footer -->
     <footer class="cute-footer">
