@@ -140,13 +140,27 @@ body.dark-mode .content {
 }
 
 .message-content {
-    background: var(--ai-message-bg);
-    border-radius: 15px;
-    padding: 15px 20px;
-    max-width: 80%;
-    box-shadow: 0 2px 5px var(--shadow-color);
-    position: relative;
-    margin-left: 15px;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.message-content p {
+    margin: 10px 0;
+    line-height: 1.6;
+}
+
+.message-content .math {
+    display: block;
+    text-align: center;
+    margin: 20px 0;
+    font-size: 1.2em;
+    color: #e0e0e0;
+}
+
+.message-content .term {
+    font-style: italic;
+    color: #4a9eff;
 }
 
 .message.therapist {
@@ -699,4 +713,16 @@ button {
         transform: scale(1.1) rotate(5deg);
         opacity: 0.4;
     }
+}
+
+/* Dark mode specific styles */
+body.dark-mode .message-content {
+    background-color: #1e1e1e;
+    color: #ffffff;
+}
+
+body.dark-mode .math {
+    background-color: #2a2a2a;
+    padding: 15px;
+    border-radius: 4px;
 }

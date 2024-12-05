@@ -100,6 +100,17 @@ document.addEventListener('DOMContentLoaded', function() {
         return processedText;
     }
 
+    function formatMathResponse(text) {
+        // Format mathematical terms with proper styling
+        text = text.replace(/\b([A-Za-z])\b(?=\s*[=,]|\s+is|\s+and)/g, '<span class="term">$1</span>');
+        
+        // Format equations with proper LaTeX delimiters
+        text = text.replace(/\$\$(.*?)\$\$/g, '<div class="math">\\[$1\\]</div>');
+        text = text.replace(/\$(.*?)\$/g, '<span class="math">\\($1\\)</span>');
+        
+        return text;
+    }
+
     function renderMessage(message, sender, timestamp = null) {
         const chatContainer = document.getElementById('chat-container');
         const messageElement = document.createElement('div');
@@ -118,6 +129,34 @@ document.addEventListener('DOMContentLoaded', function() {
 
         chatContainer.appendChild(messageElement);
         chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    function appendMessage(message, isUser = false) {
+        const messagesDiv = document.getElementById('messages');
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${isUser ? 'user' : 'therapist'}`;
+        
+        const contentDiv = document.createElement('div');
+        contentDiv.className = 'message-content';
+        
+        // Format message if it contains mathematical content
+        const formattedMessage = formatMathResponse(message);
+        contentDiv.innerHTML = `<p>${formattedMessage}</p>`;
+        
+        // Add timestamp
+        const timestamp = document.createElement('span');
+        timestamp.className = 'timestamp';
+        timestamp.textContent = new Date().toLocaleTimeString();
+        contentDiv.appendChild(timestamp);
+        
+        messageDiv.appendChild(contentDiv);
+        messagesDiv.appendChild(messageDiv);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        
+        // Trigger MathJax to render any new math content
+        if (window.MathJax) {
+            MathJax.typesetPromise([contentDiv]);
+        }
     }
 
     // Ensure MathJax rendering for equations
@@ -282,7 +321,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const aiResponse = data.response || 'I apologize, but I could not generate a response.';
             
             const enhancedResponse = addEmojisToResponse(aiResponse);
-            addMessage(enhancedResponse, false);
+            appendMessage(enhancedResponse, false);
         } catch (error) {
             console.error('Detailed Error:', {
                 message: error.message,
@@ -298,7 +337,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 'Oops! Seems like our AI is taking a brief meditation break. Retry?'
             ];
             
-            addMessage(errorMessages[Math.floor(Math.random() * errorMessages.length)], false);
+            appendMessage(errorMessages[Math.floor(Math.random() * errorMessages.length)], false);
         } finally {
             // Re-enable input and button
             userInput.disabled = false;
