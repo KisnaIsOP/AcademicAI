@@ -755,13 +755,76 @@ button {
 }
 
 /* Dark mode specific styles */
+body.dark-mode {
+    background-color: #000000;
+}
+
+body.dark-mode .chat-container {
+    background-color: #000000;
+}
+
+body.dark-mode .messages {
+    background-color: #000000;
+}
+
+body.dark-mode .message {
+    background-color: #0d0d0d;
+    color: #ffffff;
+}
+
 body.dark-mode .message-content {
     background-color: #0d0d0d;
     color: #ffffff;
 }
 
-body.dark-mode .math {
-    background-color: #2a2a2a;
-    padding: 15px;
-    border-radius: 4px;
+/* Message container specific styles */
+.chat-container {
+    background-color: inherit;
+}
+
+.messages {
+    background-color: inherit;
+}
+
+.message {
+    margin: 10px;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.message.therapist .message-content {
+    background-color: inherit;
+}
+
+/* Input area dark mode */
+body.dark-mode .input-container {
+    background-color: #0d0d0d;
+    border-top: 1px solid #1a1a1a;
+}
+
+body.dark-mode input[type="text"] {
+    background-color: #1a1a1a;
+    color: #ffffff;
+    border: 1px solid #333;
+}
+
+/* Override any white backgrounds */
+.message, .message-content, .chat-container, .messages {
+    background-color: transparent !important;
+}
+
+body.dark-mode {
+    background-color: #000000 !important;
+}
+
+body.dark-mode .message,
+body.dark-mode .message-content,
+body.dark-mode .chat-container,
+body.dark-mode .messages {
+    background-color: #000000 !important;
+    color: #ffffff;
+}
+
+body.dark-mode .message.therapist .message-content {
+    background-color: #0d0d0d !important;
 }
