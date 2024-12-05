@@ -126,183 +126,84 @@ body {
 /* Message Styling */
 .message {
     display: flex;
-    flex-direction: column;
-    max-width: 85%;
-    animation: fadeIn 0.5s ease-out;
-}
-
-.message.user {
-    align-self: flex-end;
+    margin-bottom: 20px;
+    align-items: flex-start;
 }
 
 .message-content {
-    padding: 16px 22px;
-    border-radius: 20px;
-    margin-bottom: 6px;
-    line-height: 1.8;
-    transition: all var(--transition-speed) ease;
-    font-size: 1.05em;
-    overflow-wrap: break-word;
-    word-wrap: break-word;
-    word-break: break-word;
-}
-
-.user .message-content {
-    background: linear-gradient(135deg, var(--primary-color), var(--primary-color));
-    color: white;
-    border-bottom-right-radius: 6px;
-    box-shadow: 0 4px 15px rgba(30, 144, 255, 0.2);
-}
-
-.therapist .message-content {
-    background: white;
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 20px;
-    line-height: 1.6;
-    box-shadow: 0 4px 20px var(--shadow-color);
-    white-space: pre-line;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-}
-
-.therapist .message-content p {
-    margin: 0.8em 0;
-}
-
-.therapist .message-content strong {
-    color: var(--primary-color);
-    font-weight: 600;
-}
-
-.therapist .message-content em {
-    color: var(--secondary-color);
-    font-style: italic;
-}
-
-.therapist .message-content .step {
-    margin: 0.8em 0;
-    padding-left: 1.5em;
+    background: var(--ai-message-bg);
+    border-radius: 15px;
+    padding: 15px 20px;
+    max-width: 80%;
+    box-shadow: 0 2px 5px var(--shadow-color);
     position: relative;
+    margin-left: 15px;
 }
 
-.therapist .message-content .step:before {
-    content: "•";
-    position: absolute;
-    left: 0;
-    color: var(--primary-color);
+.message.therapist {
+    justify-content: flex-start;
 }
 
-.therapist .message-content pre,
-.therapist .message-content code {
-    background-color: var(--code-background);
-    color: var(--code-text-color);
-    border-radius: 6px;
-    padding: 0.5em;
-    margin: 0.8em 0;
-    display: block;
-    white-space: pre-wrap;
-    word-wrap: break-word;
+.message.user {
+    justify-content: flex-end;
 }
 
-[data-theme="dark"] .therapist .message-content {
-    background-color: #1E1E1E;
-    border-color: #333;
-    color: #E0E0E0;
+.message.user .message-content {
+    background: var(--user-message-bg);
+    color: var(--user-message-text);
+    margin-right: 15px;
+    margin-left: 0;
 }
 
-[data-theme="dark"] body {
-    background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
-    background-attachment: fixed;
-    color: var(--text-color);
+/* Profile Picture */
+.message.therapist::before {
+    content: '';
+    width: 40px;
+    height: 40px;
+    background-image: url('/static/images/logo.svg');
+    background-size: cover;
+    border-radius: 50%;
+    margin-right: 10px;
+    flex-shrink: 0;
 }
 
-[data-theme="dark"] .chat-container {
-    background: var(--message-bg-therapist);
-    border-color: var(--border-color);
-}
-
-[data-theme="dark"] .therapist .message-content {
-    background: var(--message-bg-therapist);
-    color: var(--text-color);
-    border-color: var(--border-color);
-}
-
-[data-theme="dark"] .user .message-content {
-    background: var(--message-bg-user);
-    color: var(--text-color);
-}
-
-[data-theme="dark"] textarea {
-    background: var(--input-background);
-    color: var(--text-color);
-    border-color: var(--input-border);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-[data-theme="dark"] textarea::placeholder {
-    color: var(--placeholder-color);
-}
-
-[data-theme="dark"] .therapist .message-content strong {
-    color: var(--primary-color);
-}
-
-[data-theme="dark"] .therapist .message-content em {
-    color: var(--secondary-color);
-}
-
-.therapist .message-content .math-block,
-.therapist .message-content .math-inline {
+/* Equation Styling */
+.equation {
+    font-family: 'Computer Modern', serif;
+    padding: 10px 0;
     display: block;
     text-align: center;
-    margin: 1em 0;
-    font-size: 1.2em;
-    color: var(--primary-color);
-    background-color: rgba(52, 152, 219, 0.1);
-    padding: 0.5em;
-    border-radius: 8px;
-    overflow-x: auto;
 }
 
-.therapist .message-content .math-block .equation {
-    font-family: 'Courier New', monospace;
-    font-weight: bold;
-    color: #2c3e50;
+/* Remove blue lines */
+.message-content p {
+    margin: 0;
+    padding: 8px 0;
+    border: none;
 }
 
-.step {
-    background-color: rgba(52, 152, 219, 0.05);
-    border-left: 4px solid var(--primary-color);
-    margin: 1em 0;
-    padding: 0.5em 1em;
+/* Mathematical expressions */
+.math-expression {
+    font-family: 'Computer Modern', serif;
+    font-style: italic;
+    padding: 5px 0;
+    display: inline-block;
 }
 
-.step-title {
-    color: var(--primary-color);
-    margin-bottom: 0.5em;
-    font-size: 1.1em;
+/* Variables and symbols */
+.symbol {
+    font-style: italic;
+    font-family: 'Computer Modern', serif;
 }
 
-.step-content {
-    line-height: 1.6;
+/* Step-by-step solution */
+.solution-step {
+    margin: 10px 0;
+    padding: 5px 0;
 }
 
-.therapist .message-content .step {
-    margin: 1em 0;
-    padding: 0.5em 1em;
-    background-color: rgba(52, 152, 219, 0.05);
-    border-left: 4px solid var(--primary-color);
-}
-
-.therapist .message-content .step-title {
-    color: var(--primary-color);
-    margin-bottom: 0.5em;
-    font-size: 1.1em;
-}
-
-.therapist .message-content .step-content {
-    line-height: 1.6;
+.solution-step:not(:last-child) {
+    margin-bottom: 15px;
 }
 
 /* Input Container */

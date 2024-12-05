@@ -198,61 +198,39 @@ def sanitize_response(text):
 def format_mathematical_notation(text):
     """
     Standardize mathematical notation across all AI responses.
-    
-    Transformation rules:
-    1. Convert common physical quantities to symbolic notation
-    2. Format formulas with proper alignment and spacing
-    3. Use standard mathematical representation
     """
-    # Mapping of common physical quantities to symbolic notation
-    notation_map = {
-        'viscosity': 'η',
-        'shear stress': 'τ',
-        'shear rate': 'γ̇',
-        'force': 'F',
-        'area': 'A',
-        'velocity': 'v',
-        'time': 't',
-        'mass': 'm',
-        'length': 'l'
-    }
+    # Replace basic mathematical operators
+    text = re.sub(r'\*\*', '^', text)
+    text = re.sub(r'\*', '×', text)
     
-    # Unicode superscript mapping
-    superscript_map = {
-        '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', 
-        '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹',
-        '-': '⁻'
-    }
+    # Format equations with proper spacing and alignment
+    equations = re.finditer(r'\$\$(.*?)\$\$', text, re.DOTALL)
+    for eq in equations:
+        formatted_eq = f'<div class="equation">{eq.group(1).strip()}</div>'
+        text = text.replace(eq.group(0), formatted_eq)
     
-    # Replace physical quantity names with symbolic notation
-    for word, symbol in notation_map.items():
-        text = re.sub(r'\b{}\b'.format(word), symbol, text, flags=re.IGNORECASE)
+    # Format inline math expressions
+    inline_math = re.finditer(r'\$(.*?)\$', text)
+    for math in inline_math:
+        formatted_math = f'<span class="math-expression">{math.group(1).strip()}</span>'
+        text = text.replace(math.group(0), formatted_math)
     
-    # Replace power notation with Unicode superscripts
-    def replace_power(match):
-        base = match.group(1)
-        power = match.group(2)
-        # Convert each character of power to superscript
-        superscript_power = ''.join(superscript_map.get(char, char) for char in power)
-        return f"{base}{superscript_power}"
+    # Format step-by-step solutions
+    steps = text.split('\n\n')
+    formatted_steps = []
+    for step in steps:
+        if step.strip():
+            formatted_steps.append(f'<div class="solution-step">{step.strip()}</div>')
     
-    # Replace r^2 style notation with superscript
-    text = re.sub(r'(\w+)\^{?(-?\d+)}?', replace_power, text)
+    text = '\n'.join(formatted_steps)
     
-    # Improve formula formatting
-    def format_formula(match):
-        # Standardize formula representation
-        formula = match.group(1)
-        
-        # Add spacing around operators
-        formula = re.sub(r'([+\-*/=])', r' \1 ', formula)
-        
-        # Center-align the formula
-        return f"\n\n{'':^40}\n{'':^40}{formula}\n{'':^40}\n"
-    
-    # Detect and format formulas enclosed in square brackets or between specific markers
-    text = re.sub(r'\[([^]]+)\]', format_formula, text)
-    text = re.sub(r'FORMULA:(.*?)(?=\n|$)', format_formula, text, flags=re.DOTALL)
+    # Format variables and symbols
+    symbols = re.finditer(r'([a-zA-Z]_[0-9a-zA-Z]|[a-zA-Z])', text)
+    for symbol in symbols:
+        if symbol.group(0) in ['a', 'an', 'the', 'in', 'on', 'at', 'to', 'for']:
+            continue
+        formatted_symbol = f'<span class="symbol">{symbol.group(0)}</span>'
+        text = text.replace(symbol.group(0), formatted_symbol, 1)
     
     return text
 
