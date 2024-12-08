@@ -493,22 +493,25 @@ document.addEventListener('DOMContentLoaded', function() {
         cursorGlow.classList.add('cursor-glow');
         document.body.appendChild(cursorGlow);
 
+        // Hide default cursor
+        document.body.style.cursor = 'none';
+
         document.addEventListener('mousemove', (e) => {
             cursorGlow.style.left = `${e.clientX}px`;
             cursorGlow.style.top = `${e.clientY}px`;
         });
 
-        // Optional: Change glow color on hover
+        // Glow effect on interactive elements
         const interactiveElements = document.querySelectorAll('a, button, input, textarea, .clickable');
         interactiveElements.forEach(el => {
             el.addEventListener('mouseenter', () => {
-                cursorGlow.style.transform = 'scale(1.5)';
-                cursorGlow.style.background = 'radial-gradient(circle closest-side, rgba(0, 255, 0, 0.4), rgba(0, 255, 0, 0))';
+                cursorGlow.style.transform = 'translate(-50%, -50%) scale(1.5)';
+                cursorGlow.style.background = 'radial-gradient(circle closest-side, rgba(0, 255, 0, 0.3), rgba(0, 255, 0, 0))';
             });
 
             el.addEventListener('mouseleave', () => {
-                cursorGlow.style.transform = 'scale(1)';
-                cursorGlow.style.background = 'radial-gradient(circle closest-side, rgba(30, 144, 255, 0.4), rgba(30, 144, 255, 0))';
+                cursorGlow.style.transform = 'translate(-50%, -50%) scale(1)';
+                cursorGlow.style.background = 'radial-gradient(circle closest-side, rgba(30, 144, 255, 0.3), rgba(30, 144, 255, 0))';
             });
         });
     });
