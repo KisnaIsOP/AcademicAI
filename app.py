@@ -33,22 +33,44 @@ except Exception as e:
 
 app = Flask(__name__)
 
-# Self-Pinging Function
+# Self-Pinging Function with Enhanced Reliability
 def keep_alive():
     while True:
         try:
-            # Use the actual render.com URL of your app
-            response = requests.get('https://hecker-ai.onrender.com', timeout=10)
-            print(f"Self-ping status: {response.status_code}")
-        except Exception as e:
-            print(f"Self-ping error: {e}")
+            # Use multiple backup URLs for redundancy
+            urls = [
+                'https://hecker-ai.onrender.com',
+                'https://academic-ai-2-0.onrender.com',
+                'https://academic-ai-backup.onrender.com'
+            ]
+            
+            # Ping multiple URLs for increased reliability
+            for url in urls:
+                try:
+                    response = requests.get(url, timeout=10)
+                    print(f"Self-ping status for {url}: {response.status_code}")
+                except requests.RequestException as e:
+                    print(f"Self-ping error for {url}: {e}")
+                
+                # Add a small delay between pings to prevent overwhelming the server
+                time.sleep(2)
+            
+            # Reduce sleep time to ping more frequently
+            time.sleep(300)  # 5 minutes instead of 20 minutes
         
-        # Sleep for 20 minutes (1200 seconds)
-        time.sleep(1200)
+        except Exception as e:
+            print(f"Critical self-ping error: {e}")
+            
+            # If something goes wrong, wait a bit and retry
+            time.sleep(60)  # Wait 1 minute before retrying
 
-# Start the keep-alive thread
-keep_alive_thread = threading.Thread(target=keep_alive, daemon=True)
-keep_alive_thread.start()
+# Start the keep-alive thread with error handling
+try:
+    keep_alive_thread = threading.Thread(target=keep_alive, daemon=True)
+    keep_alive_thread.start()
+    print("Self-ping thread started successfully")
+except Exception as e:
+    print(f"Failed to start self-ping thread: {e}")
 
 # AI Configuration
 AI_DESCRIPTION = """
