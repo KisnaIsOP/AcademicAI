@@ -166,42 +166,42 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function appendMessage(message, isUser = false) {
-        const messagesDiv = document.getElementById('messages');
+        const messagesContainer = document.getElementById('messages');
         const messageDiv = document.createElement('div');
-        messageDiv.className = `message ${isUser ? 'user' : 'therapist'}`;
+        messageDiv.classList.add('message', isUser ? 'user' : 'therapist');
+
+        // Profile image
+        const profileImg = document.createElement('img');
+        profileImg.src = isUser 
+            ? (userProfileImage || '/static/images/default_user.png') 
+            : '/static/images/logo.png';
+        profileImg.alt = isUser ? 'User Profile' : 'Bot Profile';
+        profileImg.classList.add(isUser ? 'user-profile' : 'bot-profile');
+
+        // Message content
+        const messageContent = document.createElement('div');
+        messageContent.classList.add('message-content');
         
-        if (!isUser) {
-            const botImg = document.createElement('img');
-            botImg.src = '/static/images/hecker_logo.png';
-            botImg.alt = 'Bot Profile';
-            botImg.className = 'bot-profile';
-            messageDiv.appendChild(botImg);
-        }
-        
-        const contentDiv = document.createElement('div');
-        contentDiv.className = 'message-content';
-        
-        // Format message
-        const formattedMessage = formatResponseText(message);
-        contentDiv.innerHTML = formattedMessage;
-        
-        // Add timestamp
+        const messageText = document.createElement('p');
+        messageText.innerHTML = message;
+        messageContent.appendChild(messageText);
+
+        // Timestamp
         const timestamp = document.createElement('span');
-        timestamp.className = 'timestamp';
-        timestamp.textContent = new Date().toLocaleTimeString();
-        contentDiv.appendChild(timestamp);
+        timestamp.classList.add('timestamp');
+        timestamp.textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
         
-        messageDiv.appendChild(contentDiv);
-        messagesDiv.appendChild(messageDiv);
-        messagesDiv.scrollTop = messagesDiv.scrollHeight;
-        
-        // Render math
-        if (window.MathJax) {
-            MathJax.typesetPromise([contentDiv]).catch(function (err) {
-                console.error('MathJax rendering error:', err);
-                contentDiv.innerHTML += `<div class='math-error'>Error rendering math: ${err.message}</div>`;
-            });
+        if (isUser) {
+            messageDiv.appendChild(messageContent);
+            messageDiv.appendChild(profileImg);
+        } else {
+            messageDiv.appendChild(profileImg);
+            messageDiv.appendChild(messageContent);
+            messageContent.appendChild(timestamp);
         }
+
+        messagesContainer.appendChild(messageDiv);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
 
     function renderMessage(message, sender, timestamp = null) {
