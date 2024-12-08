@@ -252,6 +252,25 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Add emojis to AI responses for more engaging communication
+    function addEmojisToResponse(text) {
+        const emojis = [
+            '🤖', '✨', '🌟', '🚀', '🧠', '📚', '🎓', '💡', '🤔', 
+            '📝', '🌈', '🔍', '💪', '🌞', '🌙', '🌍', '🎉', '👍'
+        ];
+
+        // Randomly select 1-3 emojis to add
+        const numEmojis = Math.floor(Math.random() * 3) + 1;
+        const selectedEmojis = Array.from({length: numEmojis}, () => 
+            emojis[Math.floor(Math.random() * emojis.length)]
+        );
+
+        // Add emojis at the beginning or end of the response
+        return Math.random() > 0.5 
+            ? `${selectedEmojis.join(' ')} ${text}` 
+            : `${text} ${selectedEmojis.join(' ')}`;
+    }
+
     // Send message
     async function sendMessage() {
         const message = userInput.value.trim();
