@@ -180,17 +180,23 @@ body.dark-mode .timestamp {
 .message.therapist {
     align-self: flex-start;
     text-align: left;
+    justify-content: flex-start;
+    width: 100%;
 }
 
 .message.therapist .message-content {
+    align-self: flex-start;
+    text-align: left;
+    margin-left: 0;
+    padding-left: 0;
+    width: auto;
+    max-width: 90%;
     display: flex;
     flex-direction: column;
     background-color: #f0f0f0;
     border: 2px solid #2c3e50; /* Dark blue-black outline for AI messages */
     border-radius: 12px;
     padding: 10px 15px;
-    max-width: 100%;
-    text-align: left;
 }
 
 .message.therapist .timestamp {
@@ -654,6 +660,58 @@ button {
     .math {
         font-size: 1em;
     }
+}
+
+/* Custom Cursor with Glow Effect */
+body {
+    cursor: none; /* Hide default cursor */
+}
+
+/* Cursor Glow Container */
+.cursor-glow {
+    position: fixed;
+    width: 20px;
+    height: 20px;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.1s ease;
+}
+
+.cursor-glow::before {
+    content: '👆';
+    font-size: 20px;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.cursor-glow::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 30px;
+    height: 30px;
+    background: radial-gradient(
+        circle closest-side, 
+        rgba(30, 144, 255, 0.4), 
+        rgba(30, 144, 255, 0)
+    );
+    border-radius: 50%;
+    opacity: 0.7;
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* Mac-style Cursor */
+body, * {
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" style="font-size:20px"><text y="20" font-size="20">👆</text></svg>'), auto;
+}
+
+/* Specific cursor styles for interactive elements */
+a, button, input, textarea, .clickable {
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" style="font-size:20px"><text y="20" font-size="20">👆</text></svg>'), pointer;
 }
 
 /* Theme Toggle */

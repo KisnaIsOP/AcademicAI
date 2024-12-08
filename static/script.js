@@ -486,4 +486,30 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Call the function to start pinging
     keepServerAlive();
+
+    // Custom Cursor Glow Effect
+    document.addEventListener('DOMContentLoaded', () => {
+        const cursorGlow = document.createElement('div');
+        cursorGlow.classList.add('cursor-glow');
+        document.body.appendChild(cursorGlow);
+
+        document.addEventListener('mousemove', (e) => {
+            cursorGlow.style.left = `${e.clientX}px`;
+            cursorGlow.style.top = `${e.clientY}px`;
+        });
+
+        // Optional: Change glow color on hover
+        const interactiveElements = document.querySelectorAll('a, button, input, textarea, .clickable');
+        interactiveElements.forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursorGlow.style.transform = 'scale(1.5)';
+                cursorGlow.style.background = 'radial-gradient(circle closest-side, rgba(0, 255, 0, 0.4), rgba(0, 255, 0, 0))';
+            });
+
+            el.addEventListener('mouseleave', () => {
+                cursorGlow.style.transform = 'scale(1)';
+                cursorGlow.style.background = 'radial-gradient(circle closest-side, rgba(30, 144, 255, 0.4), rgba(30, 144, 255, 0))';
+            });
+        });
+    });
 });

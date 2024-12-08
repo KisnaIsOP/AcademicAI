@@ -8,12 +8,28 @@ from datetime import datetime
 import threading
 import time
 import requests
+import logging
+
+# Set up logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 # Load environment variables
 load_dotenv()
 
-# Configure Gemini AI
-genai.configure(api_key=os.getenv('GEMINI_API_KEY'))
+# Configure Gemini AI with enhanced error handling
+try:
+    api_key = os.getenv('GEMINI_API_KEY')
+    if not api_key:
+        logger.error("No API key found in environment variables")
+        raise ValueError("Gemini API key is missing")
+    
+    genai.configure(api_key=api_key)
+    logger.info("Gemini AI successfully configured")
+except Exception as e:
+    logger.error(f"Gemini API Configuration Error: {e}", exc_info=True)
+    # You might want to add a fallback mechanism or exit the application
+    raise
 
 app = Flask(__name__)
 
