@@ -157,69 +157,52 @@ body.dark-mode .timestamp {
 /* Message Styling */
 .message {
     display: flex;
-    margin-bottom: 20px;
     align-items: flex-start;
-}
-
-.message-content {
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 10px;
-}
-
-.message-content p {
-    margin: 10px 0;
-    line-height: 1.6;
-}
-
-.message-content .math {
-    display: block;
-    text-align: center;
-    margin: 20px 0;
-    font-size: 1.2em;
-    color: #e0e0e0;
-}
-
-.message-content .term {
-    font-style: italic;
-    color: #4a9eff;
-}
-
-.message.therapist {
-    justify-content: flex-start;
-    display: flex;
-    align-items: flex-start;
-    text-align: left;
-    gap: 10px;
-}
-
-.message.therapist .message-content {
-    text-align: left;
-    align-self: flex-start;
-}
-
-.bot-profile {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-top: 5px;
-}
-
-.message.therapist .message-content {
-    margin-left: 0;
-    max-width: calc(100% - 50px);
+    margin-bottom: 15px;
+    max-width: 90%;
+    width: fit-content;
 }
 
 .message.user {
-    justify-content: flex-end;
+    align-self: flex-end;
+    text-align: right;
 }
 
 .message.user .message-content {
-    background: var(--user-message-bg);
-    color: var(--user-message-text);
-    margin-right: 15px;
-    margin-left: 0;
+    background-color: #e6f2ff;
+    border: 2px solid #1E90FF; /* Dodger Blue outline for user messages */
+    border-radius: 12px;
+    padding: 10px 15px;
+    max-width: 100%;
+    text-align: right;
+}
+
+.message.therapist {
+    align-self: flex-start;
+    text-align: left;
+}
+
+.message.therapist .message-content {
+    background-color: #f0f0f0;
+    border: 2px solid #2c3e50; /* Dark blue-black outline for AI messages */
+    border-radius: 12px;
+    padding: 10px 15px;
+    max-width: 100%;
+    text-align: left;
+}
+
+.message .bot-profile {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.message .user-profile {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-left: 10px;
 }
 
 /* Profile Picture */
