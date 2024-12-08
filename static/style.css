@@ -189,7 +189,13 @@ body.dark-mode .timestamp {
     justify-content: flex-start;
     display: flex;
     align-items: flex-start;
+    text-align: left;
     gap: 10px;
+}
+
+.message.therapist .message-content {
+    text-align: left;
+    align-self: flex-start;
 }
 
 .bot-profile {
